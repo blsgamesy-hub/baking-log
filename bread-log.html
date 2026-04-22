@@ -1,0 +1,2108 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#8B5E34">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="빵기록">
+<title>빵 기록</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600&family=DM+Mono:ital,wght@0,300;0,400;1,300&display=swap');
+
+  :root {
+    --bg: #F7F3EE;
+    --bg2: #EDE3CF;
+    --bg3: #E2D8C0;
+    --ink: #1C1410;
+    --ink2: #5C4A38;
+    --ink3: #9C8870;
+    --accent: #8B5E34;
+    --accent2: #C9894A;
+    --warm: #D4A870;
+    --line: #DDD0B4;
+    --white: #FDFAF6;
+    --red: #A63A2A;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Serif KR', serif;
+    background: var(--bg);
+    color: var(--ink);
+    min-height: 100vh;
+    max-width: 480px;
+    margin: 0 auto;
+    position: relative;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    max-width: 480px;
+    margin: 0 auto;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='480' height='900' viewBox='0 0 480 900'%3E%3Cg fill='none' stroke='%23C4A882' stroke-width='1.1' stroke-linecap='round' stroke-linejoin='round' opacity='0.18'%3E%3C!-- 왼쪽 위: 둥근 르방 덩어리 --%3E%3Cellipse cx='68' cy='120' rx='44' ry='36'/%3E%3Cpath d='M44 108 Q68 88 92 108'/%3E%3Cpath d='M50 118 Q68 104 86 118'/%3E%3Cpath d='M68 84 Q72 76 76 84'/%3E%3Cpath d='M56 90 Q60 82 64 90'/%3E%3Cpath d='M80 90 Q84 82 88 90'/%3E%3C!-- 오른쪽 위: 바게트 --%3E%3Cellipse cx='390' cy='80' rx='68' ry='18' transform='rotate(-20 390 80)'/%3E%3Cpath d='M334 62 Q360 44 386 58' stroke-width='0.9'/%3E%3Cpath d='M348 72 Q374 54 400 68' stroke-width='0.9'/%3E%3Cpath d='M362 82 Q388 64 414 78' stroke-width='0.9'/%3E%3Cpath d='M340 90 Q366 72 392 86' stroke-width='0.9'/%3E%3C!-- 중앙 왼쪽: 밀 이삭 --%3E%3Cpath d='M30 380 Q30 300 36 260'/%3E%3Cellipse cx='36' cy='258' rx='5' ry='9' transform='rotate(-10 36 258)'/%3E%3Cellipse cx='28' cy='272' rx='5' ry='9' transform='rotate(-25 28 272)'/%3E%3Cellipse cx='44' cy='272' rx='5' ry='9' transform='rotate(5 44 272)'/%3E%3Cellipse cx='24' cy='288' rx='5' ry='9' transform='rotate(-30 24 288)'/%3E%3Cellipse cx='40' cy='288' rx='5' ry='9' transform='rotate(10 40 288)'/%3E%3Cellipse cx='20' cy='304' rx='5' ry='9' transform='rotate(-35 20 304)'/%3E%3Cellipse cx='38' cy='306' rx='5' ry='9' transform='rotate(15 38 306)'/%3E%3C!-- 오른쪽 중간: 크루아상 --%3E%3Cpath d='M400 350 Q380 320 360 340 Q340 360 355 385 Q375 405 400 390 Q430 370 420 345 Q408 328 390 335'/%3E%3Cpath d='M380 322 Q370 310 358 318'/%3E%3Cpath d='M418 346 Q428 334 436 342'/%3E%3Cpath d='M370 338 Q378 328 388 336' stroke-width='0.8'/%3E%3Cpath d='M385 372 Q393 362 401 370' stroke-width='0.8'/%3E%3Cpath d='M364 360 Q372 350 380 358' stroke-width='0.8'/%3E%3C!-- 왼쪽 아래: 작은 롤빵 두 개 --%3E%3Cellipse cx='60' cy='600' rx='32' ry='26'/%3E%3Cpath d='M38 590 Q60 574 82 590'/%3E%3Cpath d='M60 574 Q64 566 68 574'/%3E%3Cellipse cx='110' cy='618' rx='28' ry='22'/%3E%3Cpath d='M92 608 Q110 594 128 608'/%3E%3Cpath d='M110 594 Q114 586 118 594'/%3E%3C!-- 오른쪽 아래: 밀 이삭 작은 것 --%3E%3Cpath d='M448 700 Q444 640 446 610'/%3E%3Cellipse cx='446' cy='608' rx='4' ry='7' transform='rotate(-5 446 608)'/%3E%3Cellipse cx='440' cy='620' rx='4' ry='7' transform='rotate(-20 440 620)'/%3E%3Cellipse cx='452' cy='620' rx='4' ry='7' transform='rotate(10 452 620)'/%3E%3Cellipse cx='436' cy='634' rx='4' ry='7' transform='rotate(-28 436 634)'/%3E%3Cellipse cx='450' cy='635' rx='4' ry='7' transform='rotate(14 450 635)'/%3E%3C!-- 중앙 하단: 식빵 한 조각 --%3E%3Crect x='186' y='780' width='108' height='80' rx='16'/%3E%3Cpath d='M186 810 Q240 790 294 810'/%3E%3Crect x='198' y='818' width='84' height='52' rx='8' stroke-width='0.8'/%3E%3C!-- 흩어진 점들 (밀가루 느낌) --%3E%3Ccircle cx='140' cy='200' r='1.5'/%3E%3Ccircle cx='155' cy='190' r='1'/%3E%3Ccircle cx='148' cy='210' r='1'/%3E%3Ccircle cx='320' cy='500' r='1.5'/%3E%3Ccircle cx='335' cy='490' r='1'/%3E%3Ccircle cx='310' cy='510' r='1'/%3E%3Ccircle cx='200' cy='650' r='1.5'/%3E%3Ccircle cx='215' cy='660' r='1'/%3E%3C/g%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-size: cover;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .page, nav, .fab, .sheet-overlay, .toast {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    bottom: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 480px;
+    background: var(--white);
+    border-top: 1px solid var(--line);
+    display: flex;
+    z-index: 100;
+  }
+  nav button {
+    flex: 1; border: none; background: none;
+    padding: 12px 4px 16px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--ink3);
+    cursor: pointer;
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    transition: color 0.2s;
+  }
+  nav button.active { color: var(--accent); }
+  nav button svg { width: 22px; height: 22px; }
+
+  /* HEADER */
+  .page-header {
+    padding: 52px 20px 16px;
+    background: var(--white);
+    border-bottom: 1px solid var(--line);
+    position: sticky; top: 0; z-index: 50;
+  }
+  .page-header h1 {
+    font-size: 22px; font-weight: 600;
+    letter-spacing: -0.5px;
+  }
+  .page-header p { font-size: 12px; color: var(--ink3); margin-top: 2px; font-family: 'DM Mono', monospace; }
+
+  /* CONTENT */
+  .content { padding: 16px 16px 100px; }
+
+  /* CARD */
+  .card {
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    margin-bottom: 12px;
+    overflow: hidden;
+    transition: box-shadow 0.2s;
+  }
+  .card:active { box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
+  .card-header {
+    padding: 14px 16px;
+    display: flex; align-items: flex-start; gap: 12px;
+    cursor: pointer;
+  }
+  .card-icon {
+    width: 40px; height: 40px; border-radius: 8px;
+    background: var(--bg2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; flex-shrink: 0;
+  }
+  .card-title { font-size: 15px; font-weight: 600; margin-bottom: 2px; }
+  .card-sub { font-size: 11px; color: var(--ink3); font-family: 'DM Mono', monospace; }
+  .card-meta { margin-left: auto; text-align: right; }
+  .badge {
+    display: inline-block;
+    padding: 2px 8px; border-radius: 20px;
+    font-size: 10px; font-family: 'DM Mono', monospace;
+    background: var(--bg2); color: var(--ink2);
+  }
+  .badge.levain { background: #E8F0E0; color: #4A6B2A; }
+
+  /* FAB */
+  .fab {
+    position: fixed;
+    bottom: 72px; right: 16px;
+    width: 52px; height: 52px; border-radius: 50%;
+    background: var(--accent);
+    color: white; border: none; cursor: pointer;
+    font-size: 24px; display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 16px rgba(123,74,45,0.35);
+    transition: transform 0.15s, box-shadow 0.15s;
+    z-index: 60;
+  }
+  .fab:active { transform: scale(0.94); box-shadow: 0 2px 8px rgba(123,74,45,0.3); }
+
+  /* MODAL / SHEET */
+  .sheet-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 200;
+    align-items: flex-end;
+  }
+  .sheet-overlay.open { display: flex; }
+  .sheet {
+    background: #F9F4ED;
+    border-radius: 20px 20px 0 0;
+    width: 100%; max-width: 480px;
+    margin: 0 auto;
+    max-height: 92vh;
+    overflow-y: auto;
+    padding: 0 0 40px;
+    animation: slideUp 0.28s cubic-bezier(0.32,0.72,0,1);
+  }
+  @keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+  }
+  .sheet-handle {
+    width: 40px; height: 4px; border-radius: 2px;
+    background: var(--line); margin: 12px auto 0;
+  }
+  .sheet-title {
+    font-size: 17px; font-weight: 600;
+    padding: 16px 20px 12px;
+    border-bottom: 1px solid var(--line);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .sheet-close {
+    background: none; border: none; cursor: pointer;
+    color: var(--ink3); font-size: 22px; padding: 0 4px;
+  }
+  .sheet-body { padding: 16px 20px; }
+
+  /* FORM */
+  .form-group { margin-bottom: 16px; }
+  .form-label {
+    display: block; font-size: 11px; font-family: 'DM Mono', monospace;
+    color: var(--ink3); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .form-input, .form-textarea, .form-select {
+    width: 100%; padding: 10px 12px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--white);
+    font-family: 'Noto Serif KR', serif;
+    font-size: 14px; color: var(--ink);
+    outline: none; transition: border-color 0.2s;
+  }
+  .form-input:focus, .form-textarea:focus, .form-select:focus {
+    border-color: var(--accent2);
+  }
+  .form-textarea { resize: vertical; min-height: 80px; }
+  .form-select { appearance: none; }
+
+  /* INGREDIENTS TABLE */
+  .ing-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .ing-table th {
+    text-align: left; padding: 6px 8px;
+    font-family: 'DM Mono', monospace; font-size: 10px;
+    color: var(--ink3); border-bottom: 1px solid var(--line);
+    font-weight: 400;
+  }
+  .ing-table th.right, .ing-table td.right { text-align: right; }
+  .ing-table td { padding: 8px; border-bottom: 1px solid var(--bg2); vertical-align: middle; }
+  .ing-table tr:last-child td { border-bottom: none; }
+  .pct-bar {
+    display: flex; align-items: center; gap: 6px;
+  }
+  .pct-track {
+    flex: 1; height: 4px; background: var(--bg3); border-radius: 2px; overflow: hidden;
+  }
+  .pct-fill { height: 100%; background: var(--accent2); border-radius: 2px; }
+  .pct-num { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--ink2); min-width: 40px; text-align: right; }
+
+  /* SECTION LABEL */
+  .section-label {
+    font-size: 10px; font-family: 'DM Mono', monospace;
+    color: var(--ink3); text-transform: uppercase; letter-spacing: 1px;
+    margin: 20px 0 8px; padding: 0 4px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .section-label::after {
+    content: ''; flex: 1; height: 1px; background: var(--line);
+  }
+
+  /* INLINE ROW */
+  .row { display: flex; gap: 10px; }
+  .row .form-group { flex: 1; }
+
+  /* ING ROW */
+  .ing-row {
+    display: flex; gap: 8px; align-items: flex-end; margin-bottom: 8px;
+  }
+  .ing-row .form-group { flex: 1; margin-bottom: 0; }
+  .ing-row-del {
+    width: 36px; height: 36px; border: 1px solid var(--line);
+    border-radius: 8px; background: none; cursor: pointer;
+    color: var(--ink3); font-size: 18px; display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+
+  /* BTN */
+  .btn {
+    padding: 11px 20px; border-radius: 8px; border: none; cursor: pointer;
+    font-family: 'Noto Serif KR', serif; font-size: 14px; font-weight: 600;
+    transition: opacity 0.15s;
+  }
+  .btn:active { opacity: 0.8; }
+  .btn-primary { background: var(--accent); color: white; width: 100%; }
+  .btn-secondary {
+    background: none; border: 1px solid var(--line);
+    color: var(--ink2); width: 100%;
+  }
+  .btn-small {
+    padding: 7px 14px; font-size: 12px; border-radius: 6px;
+    background: var(--bg2); border: 1px solid var(--line); color: var(--ink2);
+    cursor: pointer; font-family: 'DM Mono', monospace;
+  }
+  .btn-row { display: flex; gap: 8px; margin-top: 16px; }
+  .btn-row .btn { flex: 1; }
+
+  /* FERMENT STEP */
+  .ferment-step {
+    background: #EDE3D0; border-radius: 8px; padding: 12px;
+    margin-bottom: 8px; position: relative;
+  }
+  .ferment-step .step-del {
+    position: absolute; top: 8px; right: 8px;
+    background: none; border: none; color: var(--ink3); cursor: pointer; font-size: 16px;
+  }
+
+  /* LOG CARD */
+  .log-date { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--ink3); }
+  .log-recipe-link { font-size: 11px; color: var(--accent2); }
+  .freshness-entry {
+    border-left: 2px solid var(--warm);
+    padding: 6px 10px; margin-bottom: 6px;
+    font-size: 13px;
+  }
+  .freshness-time { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--ink3); }
+
+  /* NOTE CARD */
+  .note-date { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--ink3); margin-bottom: 4px; }
+  .note-title { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+  .note-body { font-size: 13px; color: var(--ink2); line-height: 1.7; }
+  .note-additions { margin-top: 10px; }
+  .note-add-entry {
+    background: var(--bg2); border-radius: 6px;
+    padding: 8px 10px; margin-bottom: 6px; font-size: 12px;
+  }
+  .note-add-date { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--ink3); margin-bottom: 2px; }
+
+  /* RECIPE DETAIL */
+  .detail-section {
+    background: var(--white); border: 1px solid var(--line);
+    border-radius: 10px; padding: 14px; margin-bottom: 12px;
+  }
+  .detail-section h3 {
+    font-size: 12px; font-family: 'DM Mono', monospace;
+    color: var(--ink3); text-transform: uppercase; letter-spacing: 0.5px;
+    margin-bottom: 10px;
+  }
+  .detail-row { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid var(--bg2); font-size: 13px; }
+  .detail-row:last-child { border-bottom: none; }
+  .detail-row span:last-child { color: var(--ink2); font-family: 'DM Mono', monospace; }
+  .detail-memo { font-size: 13px; color: var(--ink2); line-height: 1.7; }
+
+  /* INGREDIENT LIB */
+  .lib-card {
+    background: var(--white); border: 1px solid var(--line);
+    border-radius: 10px; padding: 14px; margin-bottom: 10px;
+  }
+  .lib-card h3 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+  .lib-card p { font-size: 12px; color: var(--ink3); font-family: 'DM Mono', monospace; }
+  .lib-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
+
+  /* EMPTY */
+  .empty {
+    text-align: center; padding: 60px 20px;
+    color: var(--ink3); font-size: 14px;
+  }
+  .empty-icon { font-size: 40px; margin-bottom: 12px; }
+
+  /* TABS in sheet */
+  .mini-tabs { display: flex; border-bottom: 1px solid var(--line); margin-bottom: 16px; }
+  .mini-tab {
+    flex: 1; padding: 10px; text-align: center;
+    font-family: 'DM Mono', monospace; font-size: 11px;
+    color: var(--ink3); cursor: pointer; border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+  }
+  .mini-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  /* CHIP toggle */
+  .chip { display: inline-flex; align-items: center; border-radius: 20px; border: 1px solid var(--line); background: var(--white); overflow: hidden; transition: all 0.15s; }
+  .chip input { display: none; }
+  .chip input + span {
+    padding: 5px 10px 5px 12px;
+    font-size: 12px; cursor: pointer;
+  }
+  .chip input:checked ~ * { color: white; }
+  .chip:has(input:checked) { background: var(--accent); border-color: var(--accent); }
+
+  .toast {
+    position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
+    background: var(--ink); color: white; padding: 10px 20px; border-radius: 20px;
+    font-size: 13px; z-index: 999; opacity: 0; transition: opacity 0.3s;
+    pointer-events: none;
+  }
+  .toast.show { opacity: 1; }
+
+  .ref-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: var(--bg2); border-radius: 6px;
+    padding: 4px 10px; font-size: 11px; color: var(--ink2);
+    font-family: 'DM Mono', monospace; margin-top: 4px;
+  }
+</style>
+
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js';
+import {
+  getAuth, GoogleAuthProvider,
+  signInWithPopup, signInWithRedirect, getRedirectResult,
+  signOut, onAuthStateChanged
+} from 'https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js';
+import {
+  initializeFirestore, persistentLocalCache, persistentMultipleTabManager,
+  collection, doc, query, orderBy,
+  setDoc, addDoc, updateDoc, deleteDoc, getDocs,
+  onSnapshot, writeBatch, terminate, clearIndexedDbPersistence
+} from 'https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyC_IMomFdFJA5-zBPb484YBqOayccWD6Og",
+  authDomain: "baking-log-242ba.firebaseapp.com",
+  projectId: "baking-log-242ba",
+  storageBucket: "baking-log-242ba.firebasestorage.app",
+  messagingSenderId: "1075019465605",
+  appId: "1:1075019465605:web:0605e4b9d98737799f3aec"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+let db;
+try {
+  db = initializeFirestore(app, {
+    localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() })
+  });
+} catch(e) {
+  const { getFirestore } = await import('https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js');
+  db = getFirestore(app);
+}
+
+window.__fb = {
+  auth, db,
+  GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult,
+  signOut, onAuthStateChanged,
+  collection, doc, query, orderBy,
+  setDoc, addDoc, updateDoc, deleteDoc, getDocs,
+  onSnapshot, writeBatch, terminate, clearIndexedDbPersistence
+};
+window.dispatchEvent(new Event('firebase-ready'));
+</script>
+
+</head>
+<body>
+
+<!-- PAGES -->
+<div id="page-recipes" class="page">
+  <div class="page-header">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+      <h1>🍞 레시피</h1>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div id="sync-dot" style="width:7px;height:7px;border-radius:50%;background:#ccc;flex-shrink:0" title="동기화 상태"></div>
+        <button id="auth-btn" class="btn-small" style="font-size:11px;padding:5px 10px">로그인</button>
+      </div>
+    </div>
+    <p id="recipe-count">— 개의 레시피</p>
+  </div>
+  <div class="content" id="recipe-list"></div>
+</div>
+
+<div id="page-logs" class="page" style="display:none">
+  <div class="page-header">
+    <h1>📋 베이킹 기록</h1>
+    <p id="log-count">— 개의 기록</p>
+  </div>
+  <div class="content" id="log-list"></div>
+</div>
+
+<div id="page-notes" class="page" style="display:none">
+  <div class="page-header">
+    <h1>💡 발견 노트</h1>
+    <p>빵을 만들며 발견한 것들</p>
+  </div>
+  <div class="content" id="note-list"></div>
+</div>
+
+<div id="page-lib" class="page" style="display:none">
+  <div class="page-header">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <h1>🌾 재료창고</h1>
+        <p>밀가루·재료 라이브러리</p>
+      </div>
+      <button class="btn-small" onclick="openSchemaEditor()" style="flex-shrink:0">카테고리 편집</button>
+    </div>
+  </div>
+  <div class="content" id="lib-list"></div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <button class="active" onclick="showPage('recipes',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>
+    레시피
+  </button>
+  <button onclick="showPage('logs',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+    기록
+  </button>
+  <button onclick="showPage('notes',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+    발견
+  </button>
+  <button onclick="showPage('lib',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
+    창고
+  </button>
+</nav>
+
+<!-- FAB -->
+<button class="fab" id="main-fab" onclick="openFab()">＋</button>
+
+<div id="json-btns" style="position:fixed;bottom:130px;right:16px;display:flex;flex-direction:column;gap:6px;z-index:60">
+  <button onclick="exportJSON()" style="width:44px;height:44px;border-radius:50%;background:var(--bg2);border:1px solid var(--line);cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.1)" title="JSON 내보내기">💾</button>
+  <button onclick="document.getElementById('json-import').click()" style="width:44px;height:44px;border-radius:50%;background:var(--bg2);border:1px solid var(--line);cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.1)" title="JSON 불러오기">📂</button>
+  <input type="file" id="json-import" accept=".json" style="display:none" onchange="importJSON(event)"/>
+</div>
+
+
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- ===== SHEETS ===== -->
+
+<!-- RECIPE FORM SHEET -->
+<div class="sheet-overlay" id="sheet-recipe">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">
+      <span id="recipe-sheet-title">새 레시피</span>
+      <button class="sheet-close" onclick="closeSheet('sheet-recipe')">✕</button>
+    </div>
+    <div class="sheet-body">
+      <input type="hidden" id="recipe-edit-id" />
+      <div class="form-group">
+        <label class="form-label">레시피 이름</label>
+        <input class="form-input" id="r-name" placeholder="ex. 컨트리 르방 78% 수화율" />
+      </div>
+      <div class="form-group" id="ref-recipe-wrap" style="display:none">
+        <label class="form-label">참조 레시피</label>
+        <div id="ref-recipe-display" class="ref-badge">—</div>
+        <input type="hidden" id="r-parent" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">태그</label>
+        <div id="tag-chips" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px;"></div>
+        <div style="display:flex;gap:6px;align-items:center">
+          <input class="form-input" id="new-tag-input" placeholder="새 태그 입력" style="flex:1;font-size:12px;padding:6px 10px"
+            onkeydown="if(event.key==='Enter'){event.preventDefault();addTagChip();}"/>
+          <button class="btn-small" onclick="addTagChip()">+ 추가</button>
+        </div>
+      </div>
+
+      <div class="section-label">재료 (베이커스%)</div>
+      <div id="ing-rows"></div>
+      <div id="quick-ing-btns" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:4px;align-items:center"></div>
+      <div id="bakers-pct-preview" style="margin-top:12px;"></div>
+
+      <div class="section-label">반죽</div>
+      <div class="form-group">
+        <label class="form-label">반죽 방법 & 메모</label>
+        <textarea class="form-textarea" id="r-mixing" placeholder="오토리즈 30분, 슬랩앤폴드 4회..."></textarea>
+      </div>
+
+      <div class="section-label">발효</div>
+      <div id="ferment-steps"></div>
+      <button class="btn-small" onclick="addFermentStep()">+ 발효 단계 추가</button>
+
+      <div class="section-label">굽기</div>
+      <div class="row">
+        <div class="form-group">
+          <label class="form-label">예열 온도 (°C)</label>
+          <input class="form-input" id="r-preheat" type="number" placeholder="250" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">예열 시간 (분)</label>
+          <input class="form-input" id="r-preheat-time" type="number" placeholder="30" />
+        </div>
+      </div>
+      <div id="bake-steps"></div>
+      <button class="btn-small" onclick="addBakeStep()" style="margin-bottom:8px">+ 굽기 단계 추가</button>
+      <div class="form-group">
+        <label class="form-label">기타 굽기 방법</label>
+        <textarea class="form-textarea" id="r-bake-note" style="min-height:60px" placeholder="스프레이 O, 뒤집기 X, 컨벡션 모드..."></textarea>
+      </div>
+
+      <div class="section-label">식힘 & 보관</div>
+      <div class="form-group">
+        <textarea class="form-textarea" id="r-storage" style="min-height:60px" placeholder="식힘망에 1시간 이상, 상온 2일, 이후 냉동..."></textarea>
+      </div>
+
+      <div class="section-label">출처</div>
+      <div class="form-group">
+        <label class="form-label">출처 (책, 유튜버, 블로그 등)</label>
+        <input class="form-input" id="r-source" placeholder="ex. 홍길동 베이킹채널"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">링크</label>
+        <input class="form-input" id="r-link" type="url" placeholder="https://youtube.com/..."/>
+      </div>
+
+      <div class="section-label">메모</div>
+      <div class="form-group">
+        <textarea class="form-textarea" id="r-memo" placeholder="자유롭게..."></textarea>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-secondary" onclick="closeSheet('sheet-recipe')">취소</button>
+        <button class="btn btn-primary" onclick="saveRecipe()">저장</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- RECIPE DETAIL SHEET -->
+<div class="sheet-overlay" id="sheet-recipe-detail">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">
+      <span id="detail-title">레시피</span>
+      <button class="sheet-close" onclick="closeSheet('sheet-recipe-detail')">✕</button>
+    </div>
+    <div class="sheet-body" id="detail-body"></div>
+  </div>
+</div>
+
+<!-- LOG FORM SHEET -->
+<div class="sheet-overlay" id="sheet-log">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">
+      <span>베이킹 기록</span>
+      <button class="sheet-close" onclick="closeSheet('sheet-log')">✕</button>
+    </div>
+    <div class="sheet-body">
+      <input type="hidden" id="log-edit-id" />
+      <div class="form-group">
+        <label class="form-label">날짜</label>
+        <input class="form-input" id="l-date" type="date" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">레시피</label>
+        <select class="form-select" id="l-recipe">
+          <option value="">선택 안 함</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">오늘의 메모 (레시피와 다른 점, 특이사항)</label>
+        <textarea class="form-textarea" id="l-memo" placeholder="수화율을 80으로 올려봄. 르방 피크가 늦었음..."></textarea>
+      </div>
+
+      <div class="section-label">결과</div>
+      <div class="row">
+        <div class="form-group">
+          <label class="form-label">외관</label>
+          <input class="form-input" id="l-look" placeholder="황금빛, 균열 예쁨..." />
+        </div>
+        <div class="form-group">
+          <label class="form-label">속결</label>
+          <input class="form-input" id="l-crumb" placeholder="기공 보통, 촉촉..." />
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">맛 & 총평</label>
+        <textarea class="form-textarea" id="l-taste" style="min-height:60px" placeholder="신맛 적절, 다음엔 발효 좀 더..."></textarea>
+      </div>
+
+      <div class="section-label">신선도 기록</div>
+      <div id="freshness-rows"></div>
+      <button class="btn-small" onclick="addFreshnessRow()">+ 시점 추가</button>
+
+      <div class="btn-row">
+        <button class="btn btn-secondary" onclick="closeSheet('sheet-log')">취소</button>
+        <button class="btn btn-primary" onclick="saveLog()">저장</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- NOTE SHEET -->
+<div class="sheet-overlay" id="sheet-note">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">
+      <span id="note-sheet-title">새 발견</span>
+      <button class="sheet-close" onclick="closeSheet('sheet-note')">✕</button>
+    </div>
+    <div class="sheet-body">
+      <input type="hidden" id="note-edit-id" />
+      <div class="form-group">
+        <label class="form-label">제목</label>
+        <input class="form-input" id="n-title" placeholder="수화율과 기공의 관계" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">내용</label>
+        <textarea class="form-textarea" id="n-body" style="min-height:120px" placeholder="발견한 것, 시도한 것, 정리하고 싶은 것..."></textarea>
+      </div>
+      <div class="section-label">참조</div>
+      <div id="n-refs-list" style="margin-bottom:8px"></div>
+      <div style="display:flex;gap:8px;margin-bottom:4px">
+        <button class="btn-small" onclick="addNoteRef('recipe')">+ 레시피</button>
+        <button class="btn-small" onclick="addNoteRef('log')">+ 베이킹 기록</button>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-secondary" onclick="closeSheet('sheet-note')">취소</button>
+        <button class="btn btn-primary" onclick="saveNote()">저장</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- REF PICKER SHEET -->
+<div class="sheet-overlay" id="sheet-ref-picker">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">
+      <span id="ref-picker-title">참조 선택</span>
+      <button class="sheet-close" onclick="closeSheet('sheet-ref-picker')">✕</button>
+    </div>
+    <div class="sheet-body" style="padding-top:8px">
+      <div id="ref-picker-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- NOTE ADD SHEET -->
+<div class="sheet-overlay" id="sheet-note-add">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">
+      <span>덧붙이기</span>
+      <button class="sheet-close" onclick="closeSheet('sheet-note-add')">✕</button>
+    </div>
+    <div class="sheet-body">
+      <input type="hidden" id="note-add-target" />
+      <div class="form-group">
+        <textarea class="form-textarea" id="na-body" style="min-height:100px" placeholder="추가로 발견한 것..."></textarea>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-secondary" onclick="closeSheet('sheet-note-add')">취소</button>
+        <button class="btn btn-primary" onclick="saveNoteAdd()">추가</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LIB SHEET -->
+<div class="sheet-overlay" id="sheet-lib">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">
+      <span id="lib-sheet-title">재료 추가</span>
+      <button class="sheet-close" onclick="closeSheet('sheet-lib')">✕</button>
+    </div>
+    <div class="sheet-body">
+      <input type="hidden" id="lib-edit-id" />
+      <div class="form-group">
+        <label class="form-label">재료 이름</label>
+        <input class="form-input" id="li-name" placeholder="ex. 곰표 강력분" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">카테고리</label>
+        <select class="form-select" id="li-cat" onchange="renderLibFields()"></select>
+      </div>
+      <div id="li-dynamic-fields"></div>
+      <div class="form-group">
+        <label class="form-label">메모</label>
+        <textarea class="form-textarea" id="li-memo" style="min-height:60px" placeholder="자유롭게..."></textarea>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-secondary" onclick="closeSheet('sheet-lib')">취소</button>
+        <button class="btn btn-primary" onclick="saveLib()">저장</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- QUICK ING BTNS EDITOR SHEET -->
+<div class="sheet-overlay" id="sheet-quick-btns">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">
+      <span>퀵 재료 버튼 편집</span>
+      <button class="sheet-close" onclick="closeSheet('sheet-quick-btns')">✕</button>
+    </div>
+    <div class="sheet-body">
+      <p style="font-size:12px;color:var(--ink3);margin-bottom:14px">재료 입력 폼에 나타날 버튼들이야. 이름·종류 바꾸거나 추가·삭제할 수 있어.</p>
+      <div id="quick-btn-editor-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- SCHEMA EDITOR SHEET -->
+<div class="sheet-overlay" id="sheet-schema">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">
+      <span>카테고리 &amp; 속성 편집</span>
+      <button class="sheet-close" onclick="closeSheet('sheet-schema')">✕</button>
+    </div>
+    <div class="sheet-body">
+      <div id="schema-cat-list"></div>
+      <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--line)">
+        <div class="form-label" style="margin-bottom:8px">새 카테고리 추가</div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <input class="form-input" id="new-cat-name" placeholder="카테고리 이름" style="flex:1"/>
+          <button class="btn-small" onclick="addCategory()" style="white-space:nowrap">+ 추가</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== STATE =====
+let state = {
+  page: 'recipes',
+  recipes: [],
+  logs: [],
+  notes: [],
+  lib: [],
+  categories: null,
+  tagPool: null,
+  quickIngBtns: null
+};
+
+function load() {
+  try {
+    const s = localStorage.getItem('bread-log-v1');
+    if (s) state = { ...state, ...JSON.parse(s) };
+  } catch(e) {}
+}
+function save() {
+  localStorage.setItem('bread-log-v1', JSON.stringify(state));
+}
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
+function today() { return new Date().toISOString().slice(0,10); }
+function fmt(d) {
+  if (!d) return '';
+  const [y,m,day] = d.split('-');
+  return `${y}. ${m}. ${day}`;
+}
+
+// ===== NAV =====
+function showPage(name, btn) {
+  state.page = name;
+  document.querySelectorAll('.page').forEach(p => p.style.display='none');
+  document.getElementById('page-'+name).style.display='block';
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  render();
+}
+
+function openFab() {
+  const p = state.page;
+  if (p==='recipes') openRecipeForm();
+  else if (p==='logs') openLogForm();
+  else if (p==='notes') openNoteForm();
+  else if (p==='lib') openLibForm();
+}
+
+// ===== SHEETS =====
+function openSheet(id) { document.getElementById(id).classList.add('open'); }
+function closeSheet(id) { document.getElementById(id).classList.remove('open'); }
+
+// ===== TOAST =====
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+// ===== RECIPES =====
+function openRecipeForm(parentId) {
+  document.getElementById('recipe-sheet-title').textContent = parentId ? '레시피 변형 복사' : '새 레시피';
+  document.getElementById('recipe-edit-id').value = '';
+  document.getElementById('r-name').value = '';
+  document.getElementById('r-mixing').value = '';
+  document.getElementById('r-preheat').value = '';
+  document.getElementById('r-preheat-time').value = '';
+  document.getElementById('bake-steps').innerHTML = '';
+  document.getElementById('r-bake-note').value = '';
+  document.getElementById('r-storage').value = '';
+  document.getElementById('r-source').value = '';
+  document.getElementById('r-link').value = '';
+  document.getElementById('r-memo').value = '';
+  _activeTags = [];
+  renderTagChips();
+  document.getElementById('ing-rows').innerHTML = '';
+  document.getElementById('ferment-steps').innerHTML = '';
+  document.getElementById('bakers-pct-preview').innerHTML = '';
+
+  if (parentId) {
+    const parent = state.recipes.find(r => r.id === parentId);
+    if (parent) {
+      document.getElementById('r-parent').value = parentId;
+      document.getElementById('ref-recipe-wrap').style.display = 'block';
+      document.getElementById('ref-recipe-display').textContent = '↗ ' + parent.name;
+      // copy fields
+      document.getElementById('r-name').value = parent.name + ' (변형)';
+      document.getElementById('r-mixing').value = parent.mixing || '';
+      document.getElementById('r-preheat').value = parent.preheat || '';
+      document.getElementById('r-preheat-time').value = parent.preheatTime || '';
+      (parent.bakeSteps||[]).forEach(s => addBakeStep(s));
+      document.getElementById('r-bake-note').value = parent.bakeNote || '';
+      document.getElementById('r-source').value = parent.source || '';
+      document.getElementById('r-link').value = parent.link || '';
+      document.getElementById('r-storage').value = parent.storage || '';
+      document.getElementById('r-source').value = parent.source || '';
+      document.getElementById('r-link').value = parent.link || '';
+      _activeTags = [...(parent.tags||[])];
+      renderTagChips();
+      (parent.ingredients||[]).forEach(i => addIngRow(i.type, i));
+      (parent.fermentSteps||[]).forEach(s => addFermentStep(s));
+    }
+  } else {
+    document.getElementById('r-parent').value = '';
+    document.getElementById('ref-recipe-wrap').style.display = 'none';
+    // 기본 재료
+    addIngRow('flour', {name:'밀가루', grams:''});
+    addIngRow('liquid', {name:'물', grams:''});
+    addIngRow('other', {name:'소금', grams:''});
+    addBakeStep();
+  }
+  renderQuickIngBtns();
+  openSheet('sheet-recipe');
+}
+
+function editRecipe(id) {
+  const r = state.recipes.find(x => x.id === id);
+  if (!r) return;
+  document.getElementById('recipe-sheet-title').textContent = '레시피 수정';
+  document.getElementById('recipe-edit-id').value = id;
+  document.getElementById('r-name').value = r.name || '';
+  document.getElementById('r-mixing').value = r.mixing || '';
+  document.getElementById('r-preheat').value = r.preheat || '';
+  document.getElementById('r-preheat-time').value = r.preheatTime || '';
+  document.getElementById('bake-steps').innerHTML = '';
+  (r.bakeSteps||[]).forEach(s => addBakeStep(s));
+  document.getElementById('r-bake-note').value = r.bakeNote || '';
+  document.getElementById('r-storage').value = r.storage || '';
+  document.getElementById('r-source').value = r.source || '';
+  document.getElementById('r-link').value = r.link || '';
+  document.getElementById('r-source').value = r.source || '';
+  document.getElementById('r-link').value = r.link || '';
+  document.getElementById('r-memo').value = r.memo || '';
+  _activeTags = [...(r.tags||[])];
+  renderTagChips();
+  document.getElementById('ing-rows').innerHTML = '';
+  document.getElementById('ferment-steps').innerHTML = '';
+  (r.ingredients||[]).forEach(i => addIngRow(i.type, i));
+  (r.fermentSteps||[]).forEach(s => addFermentStep(s));
+  if (r.parentId) {
+    const parent = state.recipes.find(x => x.id === r.parentId);
+    document.getElementById('r-parent').value = r.parentId;
+    document.getElementById('ref-recipe-wrap').style.display = 'block';
+    document.getElementById('ref-recipe-display').textContent = '↗ ' + (parent ? parent.name : '삭제된 레시피');
+  } else {
+    document.getElementById('r-parent').value = '';
+    document.getElementById('ref-recipe-wrap').style.display = 'none';
+  }
+  openSheet('sheet-recipe');
+}
+
+const ING_TYPES = [
+  { id: 'flour',   label: '가루류', color: '#F2E2B6', isBase: true  },
+  { id: 'liquid',  label: '액체류', color: '#EDF4FA', isBase: false },
+  { id: 'fat',     label: '유지류', color: '#FFFEDF', isBase: false },
+  { id: 'starter', label: '발효종', color: '#E4F0E0', isBase: false },
+  { id: 'filling', label: '필링',   color: '#EDE0F0', isBase: false },
+  { id: 'other',   label: '기타',   color: '#EBE2D3', isBase: false },
+];
+function ingTypeInfo(typeId) {
+  return ING_TYPES.find(t => t.id === typeId) || ING_TYPES[ING_TYPES.length - 1];
+}
+
+function addIngRow(type, data) {
+  const id = uid();
+  const wrap = document.getElementById('ing-rows');
+  const div = document.createElement('div');
+  div.className = 'ing-row';
+  div.id = 'ing-' + id;
+  div.dataset.type = type || 'other';
+  const info = ingTypeInfo(div.dataset.type);
+  const typeOptions = ING_TYPES.map(t =>
+    `<option value="${t.id}" ${t.id === div.dataset.type ? 'selected' : ''}>${t.label}</option>`
+  ).join('');
+  div.innerHTML = `
+    <div style="display:flex;flex-direction:column;gap:4px;flex:1;min-width:0">
+      <select class="form-select" style="font-size:11px;padding:4px 6px;border-radius:6px;background:${info.color};border-color:transparent"
+        onchange="updateIngType('ing-${id}',this.value)">${typeOptions}</select>
+      <input class="form-input" placeholder="이름" value="${data?.name||''}" oninput="calcPct()" style="font-size:13px"/>
+    </div>
+    <div class="form-group" style="flex:0 0 80px;margin:0">
+      <label class="form-label">g</label>
+      <input class="form-input" type="number" placeholder="0" value="${data?.grams||''}" oninput="calcPct()" style="margin-top:4px"/>
+    </div>
+    <button class="ing-row-del" onclick="document.getElementById('ing-${id}').remove();calcPct()">×</button>
+  `;
+  wrap.appendChild(div);
+  calcPct();
+}
+
+function updateIngType(rowId, newType) {
+  const row = document.getElementById(rowId);
+  if (!row) return;
+  row.dataset.type = newType;
+  const info = ingTypeInfo(newType);
+  row.querySelector('select').style.background = info.color;
+  calcPct();
+}
+
+function calcPct() {
+  const rows = document.querySelectorAll('#ing-rows .ing-row');
+  let flourTotal = 0;
+  rows.forEach(r => {
+    if (ingTypeInfo(r.dataset.type)?.isBase) {
+      const g = parseFloat(r.querySelectorAll('input')[1].value) || 0;
+      flourTotal += g;
+    }
+  });
+  const preview = document.getElementById('bakers-pct-preview');
+  if (!flourTotal || rows.length === 0) { preview.innerHTML = ''; return; }
+
+  let html = `<table class="ing-table"><thead><tr><th>재료</th><th class="right">g</th><th>베이커스%</th></tr></thead><tbody>`;
+  rows.forEach(r => {
+    const name = r.querySelectorAll('input')[0].value || '—';
+    const g = parseFloat(r.querySelectorAll('input')[1].value) || 0;
+    const pct = flourTotal ? ((g / flourTotal) * 100) : 0;
+    const barW = Math.min(pct, 100);
+    html += `<tr>
+      <td>${name}</td>
+      <td class="right" style="font-family:'DM Mono',monospace;font-size:12px">${g}</td>
+      <td><div class="pct-bar"><div class="pct-track"><div class="pct-fill" style="width:${barW}%"></div></div><span class="pct-num">${pct.toFixed(1)}%</span></div></td>
+    </tr>`;
+  });
+  html += `<tr style="background:var(--bg2)"><td style="font-weight:600">밀가루 합계</td><td class="right" style="font-family:'DM Mono',monospace;font-size:12px">${flourTotal}g</td><td><span class="pct-num" style="color:var(--accent)">100%</span></td></tr>`;
+  html += '</tbody></table>';
+  preview.innerHTML = html;
+}
+
+function addFermentStep(data) {
+  const id = uid();
+  const wrap = document.getElementById('ferment-steps');
+  const div = document.createElement('div');
+  div.className = 'ferment-step';
+  div.id = 'fs-' + id;
+  div.innerHTML = `
+    <button class="step-del" onclick="document.getElementById('fs-${id}').remove()">×</button>
+    <div class="form-group" style="margin-bottom:8px">
+      <label class="form-label">단계명</label>
+      <input class="form-input" placeholder="1차 발효 / 냉장 벌크 / 2차 발효..." value="${data?.name||''}"/>
+    </div>
+    <div class="row">
+      <div class="form-group">
+        <label class="form-label">온도 (°C)</label>
+        <input class="form-input" type="number" placeholder="26" value="${data?.temp||''}"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">시간</label>
+        <input class="form-input" placeholder="4h / 12h..." value="${data?.time||''}"/>
+      </div>
+    </div>
+    <div class="form-group" style="margin-bottom:0">
+      <label class="form-label">메모</label>
+      <input class="form-input" placeholder="50%까지 부풀면 완료..." value="${data?.memo||''}"/>
+    </div>
+  `;
+  wrap.appendChild(div);
+}
+
+function addBakeStep(data) {
+  const id = uid();
+  const wrap = document.getElementById('bake-steps');
+  const div = document.createElement('div');
+  div.className = 'ferment-step';
+  div.id = 'bs-' + id;
+  div.innerHTML = `
+    <button class="step-del" onclick="document.getElementById('bs-${id}').remove()">×</button>
+    <div class="row">
+      <div class="form-group" style="margin-bottom:0">
+        <label class="form-label">굽기 온도 (°C)</label>
+        <input class="form-input" type="number" placeholder="200" value="${data?.temp||''}"/>
+      </div>
+      <div class="form-group" style="margin-bottom:0">
+        <label class="form-label">시간 (분)</label>
+        <input class="form-input" type="number" placeholder="20" value="${data?.time||''}"/>
+      </div>
+    </div>
+    <div class="form-group" style="margin-bottom:0;margin-top:8px">
+      <label class="form-label">메모</label>
+      <input class="form-input" placeholder="뚜껑 닫고 / 뒤집어서..." value="${data?.memo||''}"/>
+    </div>
+  `;
+  wrap.appendChild(div);
+  // auto-add first step hint
+  if (wrap.children.length === 1 && !data) {
+    div.querySelector('input').focus();
+  }
+}
+
+function getBakeSteps() {
+  return Array.from(document.querySelectorAll('#bake-steps .ferment-step')).map(el => {
+    const inputs = el.querySelectorAll('input');
+    return { temp: inputs[0].value, time: inputs[1].value, memo: inputs[2].value };
+  });
+}
+
+
+function getIngredients() {
+  return Array.from(document.querySelectorAll('#ing-rows .ing-row')).map(r => ({
+    type: r.dataset.type,
+    name: r.querySelectorAll('input')[0].value,
+    grams: parseFloat(r.querySelectorAll('input')[1].value) || 0
+  }));
+}
+
+function getFermentSteps() {
+  return Array.from(document.querySelectorAll('#ferment-steps .ferment-step')).map(el => {
+    const inputs = el.querySelectorAll('input');
+    return { name: inputs[0].value, temp: inputs[1].value, time: inputs[2].value, memo: inputs[3].value };
+  });
+}
+
+function saveRecipe() {
+  const name = document.getElementById('r-name').value.trim();
+  if (!name) { toast('이름을 입력해주세요'); return; }
+  const editId = document.getElementById('recipe-edit-id').value;
+  const tags = [..._activeTags];
+  const rec = {
+    id: editId || uid(),
+    name,
+    tags,
+    parentId: document.getElementById('r-parent').value || null,
+    ingredients: getIngredients(),
+    mixing: document.getElementById('r-mixing').value,
+    fermentSteps: getFermentSteps(),
+    preheat: document.getElementById('r-preheat').value,
+    preheatTime: document.getElementById('r-preheat-time').value,
+    bakeSteps: getBakeSteps(),
+    bakeNote: document.getElementById('r-bake-note').value,
+    storage: document.getElementById('r-storage').value,
+    source: document.getElementById('r-source').value,
+    link: document.getElementById('r-link').value,
+    source: document.getElementById('r-source').value,
+    link: document.getElementById('r-link').value,
+    memo: document.getElementById('r-memo').value,
+    createdAt: editId ? (state.recipes.find(r=>r.id===editId)?.createdAt || today()) : today()
+  };
+  if (editId) {
+    state.recipes = state.recipes.map(r => r.id === editId ? rec : r);
+  } else {
+    state.recipes.unshift(rec);
+  }
+  save(); fsSet('recipes', rec); closeSheet('sheet-recipe'); renderRecipes();
+  toast(editId ? '수정됐어!' : '레시피 저장됐어!');
+}
+
+function deleteRecipe(id) {
+  if (!confirm('이 레시피를 삭제할까요?')) return;
+  state.recipes = state.recipes.filter(r => r.id !== id);
+  fsDel('recipes', id); save(); closeSheet('sheet-recipe-detail'); renderRecipes();
+  toast('삭제됐어');
+}
+
+function openRecipeDetail(id) {
+  const r = state.recipes.find(x => x.id === id);
+  if (!r) return;
+  document.getElementById('detail-title').textContent = r.name;
+
+  const flourTotal = (r.ingredients||[]).filter(i=>ingTypeInfo(i.type)?.isBase).reduce((s,i)=>s+i.grams,0);
+  let ingHtml = '';
+  if (r.ingredients && r.ingredients.length) {
+    ingHtml = `<table class="ing-table"><thead><tr><th>재료</th><th class="right">g</th><th>베이커스%</th></tr></thead><tbody>`;
+    r.ingredients.forEach(i => {
+      const pct = flourTotal ? ((i.grams/flourTotal)*100) : 0;
+      const barW = Math.min(pct,100);
+      ingHtml += `<tr>
+        <td>${i.name}</td>
+        <td class="right" style="font-family:'DM Mono',monospace;font-size:12px">${i.grams}g</td>
+        <td><div class="pct-bar"><div class="pct-track"><div class="pct-fill" style="width:${barW}%"></div></div><span class="pct-num">${pct.toFixed(1)}%</span></div></td>
+      </tr>`;
+    });
+    ingHtml += '</tbody></table>';
+  }
+
+  const parent = r.parentId ? state.recipes.find(x=>x.id===r.parentId) : null;
+  const children = state.recipes.filter(x=>x.parentId===id);
+  const logs = state.logs.filter(l=>l.recipeId===id);
+
+  let html = '';
+  if (parent) html += `<div class="ref-badge" style="margin-bottom:12px">↗ ${parent.name}</div>`;
+  if ((r.tags||[]).length) html += `<div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px">${r.tags.map(t=>`<span class="badge levain">${t}</span>`).join('')}</div>`;
+
+  html += `<div class="detail-section"><h3>재료 & 베이커스%</h3>${ingHtml||'—'}</div>`;
+  if (r.mixing) html += `<div class="detail-section"><h3>반죽</h3><p class="detail-memo">${r.mixing}</p></div>`;
+  if (r.fermentSteps && r.fermentSteps.length) {
+    html += `<div class="detail-section"><h3>발효</h3>`;
+    r.fermentSteps.forEach(s => {
+      html += `<div class="detail-row"><span>${s.name}</span><span>${s.temp?s.temp+'°C ':''} ${s.time||''}</span></div>`;
+      if(s.memo) html += `<p style="font-size:12px;color:var(--ink3);padding:4px 0">${s.memo}</p>`;
+    });
+    html += `</div>`;
+  }
+  if (r.preheat || (r.bakeSteps&&r.bakeSteps.length)) {
+    html += `<div class="detail-section"><h3>굽기</h3>`;
+    if(r.preheat) {
+      const preheatLabel = r.preheatTime ? `${r.preheat}°C · ${r.preheatTime}분` : `${r.preheat}°C`;
+      html += `<div class="detail-row"><span>예열</span><span>${preheatLabel}</span></div>`;
+    }
+    (r.bakeSteps||[]).forEach((s,i) => {
+      const label = r.bakeSteps.length > 1 ? `굽기 ${i+1}단계` : '굽기';
+      const val = [s.temp?s.temp+'°C':'', s.time?s.time+'분':''].filter(Boolean).join(' · ');
+      html += `<div class="detail-row"><span>${label}</span><span>${val}</span></div>`;
+      if(s.memo) html += `<p style="font-size:12px;color:var(--ink3);padding:4px 0 4px 8px">${s.memo}</p>`;
+    });
+    if(r.bakeNote) html += `<p class="detail-memo" style="margin-top:8px">${r.bakeNote}</p>`;
+    html += `</div>`;
+  }
+  if (r.storage) html += `<div class="detail-section"><h3>식힘 & 보관</h3><p class="detail-memo">${r.storage}</p></div>`;
+  if (r.source || r.link) {
+    html += `<div class="detail-section"><h3>출처</h3>`;
+    if (r.source) html += `<p class="detail-memo" style="margin-bottom:6px">${r.source}</p>`;
+    if (r.link) html += `<a href="${r.link}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--accent2);font-family:'DM Mono',monospace;word-break:break-all">🔗 ${r.link}</a>`;
+    html += '</div>';
+  }
+  if (r.source || r.link) {
+    html += `<div class="detail-section"><h3>출처</h3>`;
+    if (r.source) html += `<p class="detail-memo" style="margin-bottom:6px">${r.source}</p>`;
+    if (r.link) html += `<a href="${r.link}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--accent2);font-family:'DM Mono',monospace;word-break:break-all">🔗 ${r.link}</a>`;
+    html += `</div>`;
+  }
+  if (r.source || r.link) {
+    html += `<div class="detail-section"><h3>출처</h3>`;
+    if (r.source) html += `<p class="detail-memo" style="margin-bottom:6px">${r.source}</p>`;
+    if (r.link) html += `<a href="${r.link}" target="_blank" rel="noopener"
+      style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--accent2);font-family:'DM Mono',monospace;word-break:break-all">
+      🔗 ${r.link}</a>`;
+    html += `</div>`;
+  }
+  if (r.memo) html += `<div class="detail-section"><h3>메모</h3><p class="detail-memo">${r.memo}</p></div>`;
+
+  if (children.length) {
+    html += `<div class="detail-section"><h3>이 레시피 기반 변형</h3>`;
+    children.forEach(c => html += `<div class="detail-row" style="cursor:pointer" onclick="closeSheet('sheet-recipe-detail');setTimeout(()=>openRecipeDetail('${c.id}'),200)"><span>${c.name}</span><span style="color:var(--accent2)">→</span></div>`);
+    html += `</div>`;
+  }
+  if (logs.length) {
+    html += `<div class="detail-section"><h3>베이킹 기록 (${logs.length}회)</h3>`;
+    logs.forEach(l => html += `<div class="detail-row"><span>${fmt(l.date)}</span><span style="font-size:11px;color:var(--ink3)">${l.taste||l.memo||'기록됨'}</span></div>`);
+    html += `</div>`;
+  }
+
+  html += `<div class="btn-row">
+    <button class="btn btn-secondary" onclick="editRecipe('${id}');closeSheet('sheet-recipe-detail')">수정</button>
+    <button class="btn btn-secondary" onclick="openRecipeForm('${id}');closeSheet('sheet-recipe-detail')">변형 복사</button>
+  </div>
+  <div style="margin-top:8px"><button class="btn btn-secondary" style="color:var(--red);border-color:var(--red);width:100%" onclick="deleteRecipe('${id}')">삭제</button></div>`;
+
+  document.getElementById('detail-body').innerHTML = html;
+  openSheet('sheet-recipe-detail');
+}
+
+function renderRecipes() {
+  const list = document.getElementById('recipe-list');
+  document.getElementById('recipe-count').textContent = `${state.recipes.length}개의 레시피`;
+  if (!state.recipes.length) {
+    list.innerHTML = `<div class="empty"><div class="empty-icon">🍞</div>아직 레시피가 없어<br>+ 버튼으로 추가해봐</div>`;
+    return;
+  }
+  list.innerHTML = state.recipes.map(r => {
+    const flourTotal = (r.ingredients||[]).filter(i=>ingTypeInfo(i.type)?.isBase).reduce((s,i)=>s+i.grams,0);
+    const waterPct = flourTotal ? ((r.ingredients||[]).filter(i=>i.name.includes('물')||i.name.includes('water')).reduce((s,i)=>s+i.grams,0)/flourTotal*100).toFixed(0) : null;
+    const sub = [r.createdAt, waterPct ? `수화율 ${waterPct}%` : null, state.logs.filter(l=>l.recipeId===r.id).length + '회 구움'].filter(Boolean).join(' · ');
+    const parent = r.parentId ? state.recipes.find(x=>x.id===r.parentId) : null;
+    const childCount = state.recipes.filter(x=>x.parentId===r.id).length;
+    return `<div class="card" onclick="openRecipeDetail('${r.id}')">
+      <div class="card-header">
+        <div class="card-icon">🍞</div>
+        <div style="flex:1">
+          <div class="card-title">${r.name}</div>
+          <div class="card-sub">${sub}</div>
+          ${parent ? `<div style="font-size:10px;color:var(--accent2);margin-top:2px">↗ ${parent.name}</div>` : ''}
+          ${childCount ? `<div style="font-size:10px;color:var(--ink3);margin-top:2px">변형 ${childCount}개</div>` : ''}
+        </div>
+        <div class="card-meta">${(r.tags||[]).map(t=>`<span class="badge levain">${t}</span>`).join(' ')}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ===== LOGS =====
+function openLogForm(recipeId) {
+  document.getElementById('log-edit-id').value = '';
+  document.getElementById('l-date').value = today();
+  document.getElementById('l-memo').value = '';
+  document.getElementById('l-look').value = '';
+  document.getElementById('l-crumb').value = '';
+  document.getElementById('l-taste').value = '';
+  document.getElementById('freshness-rows').innerHTML = '';
+  const sel = document.getElementById('l-recipe');
+  sel.innerHTML = '<option value="">선택 안 함</option>' + state.recipes.map(r=>`<option value="${r.id}">${r.name}</option>`).join('');
+  if (recipeId) sel.value = recipeId;
+  openSheet('sheet-log');
+}
+
+function addFreshnessRow(data) {
+  const id = uid();
+  const wrap = document.getElementById('freshness-rows');
+  const div = document.createElement('div');
+  div.className = 'ing-row';
+  div.id = 'fr-' + id;
+  div.innerHTML = `
+    <div class="form-group" style="flex:1;margin:0">
+      <label class="form-label">시점</label>
+      <input class="form-input" placeholder="당일 저녁 / D+1 아침..." value="${data?.time||''}"/>
+    </div>
+    <div class="form-group" style="flex:2;margin:0">
+      <label class="form-label">상태</label>
+      <input class="form-input" placeholder="촉촉함 유지, 크러스트 부드러워짐..." value="${data?.note||''}"/>
+    </div>
+    <button class="ing-row-del" onclick="document.getElementById('fr-${id}').remove()">×</button>
+  `;
+  wrap.appendChild(div);
+}
+
+function getFreshness() {
+  return Array.from(document.querySelectorAll('#freshness-rows .ing-row')).map(r => ({
+    time: r.querySelectorAll('input')[0].value,
+    note: r.querySelectorAll('input')[1].value
+  }));
+}
+
+function saveLog() {
+  const date = document.getElementById('l-date').value;
+  if (!date) { toast('날짜를 선택해주세요'); return; }
+  const editId = document.getElementById('log-edit-id').value;
+  const log = {
+    id: editId || uid(),
+    date,
+    recipeId: document.getElementById('l-recipe').value || null,
+    memo: document.getElementById('l-memo').value,
+    look: document.getElementById('l-look').value,
+    crumb: document.getElementById('l-crumb').value,
+    taste: document.getElementById('l-taste').value,
+    freshness: getFreshness()
+  };
+  if (editId) {
+    state.logs = state.logs.map(l => l.id === editId ? log : l);
+  } else {
+    state.logs.unshift(log);
+  }
+  save(); fsSet('logs', log); closeSheet('sheet-log'); renderLogs();
+  toast('기록됐어!');
+}
+
+function renderLogs() {
+  const list = document.getElementById('log-list');
+  document.getElementById('log-count').textContent = `${state.logs.length}개의 기록`;
+  if (!state.logs.length) {
+    list.innerHTML = `<div class="empty"><div class="empty-icon">📋</div>아직 기록이 없어<br>+ 버튼으로 추가해봐</div>`;
+    return;
+  }
+  list.innerHTML = state.logs.map(l => {
+    const recipe = l.recipeId ? state.recipes.find(r=>r.id===l.recipeId) : null;
+    const freshnessHtml = (l.freshness||[]).map(f=>`
+      <div class="freshness-entry">
+        <div class="freshness-time">${f.time}</div>
+        <div>${f.note}</div>
+      </div>`).join('');
+    return `<div class="card">
+      <div class="card-header" style="cursor:default">
+        <div class="card-icon">📋</div>
+        <div style="flex:1">
+          <div class="log-date">${fmt(l.date)}</div>
+          ${recipe ? `<div class="log-recipe-link" onclick="openRecipeDetail('${recipe.id}')" style="cursor:pointer">↗ ${recipe.name}</div>` : ''}
+          ${l.memo ? `<div style="font-size:13px;margin-top:4px;color:var(--ink2)">${l.memo}</div>` : ''}
+        </div>
+      </div>
+      ${(l.look||l.crumb||l.taste) ? `<div style="padding:0 16px 12px;display:flex;flex-direction:column;gap:4px">
+        ${l.look?`<div style="font-size:12px"><span style="color:var(--ink3);font-family:'DM Mono',monospace">외관 </span>${l.look}</div>`:''}
+        ${l.crumb?`<div style="font-size:12px"><span style="color:var(--ink3);font-family:'DM Mono',monospace">속결 </span>${l.crumb}</div>`:''}
+        ${l.taste?`<div style="font-size:12px"><span style="color:var(--ink3);font-family:'DM Mono',monospace">맛   </span>${l.taste}</div>`:''}
+      </div>` : ''}
+      ${freshnessHtml ? `<div style="padding:0 16px 12px"><div style="font-size:10px;font-family:'DM Mono',monospace;color:var(--ink3);margin-bottom:6px">FRESHNESS</div>${freshnessHtml}</div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+// ===== NOTES =====
+function openNoteForm(id) {
+  document.getElementById('note-edit-id').value = id || '';
+  if (id) {
+    const n = state.notes.find(x=>x.id===id);
+    document.getElementById('note-sheet-title').textContent = '발견 수정';
+    document.getElementById('n-title').value = n?.title || '';
+    document.getElementById('n-body').value = n?.body || '';
+    renderNoteRefs(n?.refs || []);
+  } else {
+    document.getElementById('note-sheet-title').textContent = '새 발견';
+    document.getElementById('n-title').value = '';
+    document.getElementById('n-body').value = '';
+    renderNoteRefs([]);
+  }
+  openSheet('sheet-note');
+}
+
+// refs stored as [{type:'recipe'|'log', id, label}]
+let _noteRefs = [];
+
+function renderNoteRefs(refs) {
+  _noteRefs = refs ? [...refs] : [];
+  redrawNoteRefs();
+}
+
+function redrawNoteRefs() {
+  const wrap = document.getElementById('n-refs-list');
+  if (!_noteRefs.length) { wrap.innerHTML = ''; return; }
+  wrap.innerHTML = _noteRefs.map((r, i) => `
+    <div class="ref-badge" style="margin-bottom:4px;display:flex;justify-content:space-between;align-items:center;width:100%;box-sizing:border-box">
+      <span>${r.type === 'recipe' ? '🍞' : '📋'} ${r.label}</span>
+      <button onclick="removeNoteRef(${i})" style="background:none;border:none;color:var(--ink3);cursor:pointer;font-size:14px;padding:0 0 0 8px">×</button>
+    </div>`).join('');
+}
+
+function addNoteRef(type) {
+  // show picker sheet
+  openRefPicker(type);
+}
+
+function removeNoteRef(idx) {
+  _noteRefs.splice(idx, 1);
+  redrawNoteRefs();
+}
+
+function openRefPicker(type) {
+  const isRecipe = type === 'recipe';
+  document.getElementById('ref-picker-title').textContent = isRecipe ? '레시피 선택' : '베이킹 기록 선택';
+  const items = isRecipe ? state.recipes : state.logs;
+  const wrap = document.getElementById('ref-picker-list');
+  if (!items.length) {
+    wrap.innerHTML = `<div class="empty" style="padding:30px 20px">${isRecipe ? '레시피가 없어' : '베이킹 기록이 없어'}</div>`;
+  } else {
+    wrap.innerHTML = items.map(item => {
+      const label = isRecipe ? item.name : `${fmt(item.date)}${item.recipeId ? ' · ' + (state.recipes.find(r=>r.id===item.recipeId)?.name||'') : ''}`;
+      return `<div onclick="selectRef('${type}','${item.id}',\`${label.replace(/`/g,"'")}\`)"
+        style="padding:12px 16px;border-bottom:1px solid var(--line);cursor:pointer;font-size:14px;display:flex;align-items:center;gap:10px">
+        <span style="font-size:18px">${isRecipe ? '🍞' : '📋'}</span>
+        <span>${label}</span>
+      </div>`;
+    }).join('');
+  }
+  openSheet('sheet-ref-picker');
+}
+
+function selectRef(type, id, label) {
+  // avoid duplicates
+  if (!_noteRefs.find(r => r.id === id)) {
+    _noteRefs.push({ type, id, label });
+    redrawNoteRefs();
+  }
+  closeSheet('sheet-ref-picker');
+}
+
+function openLogDetail(logId) {
+  // jump to logs tab and highlight — simple: just switch tab
+  const logsBtn = document.querySelector('nav button:nth-child(2)');
+  showPage('logs', logsBtn);
+}
+
+function saveNote() {
+  const title = document.getElementById('n-title').value.trim();
+  if (!title) { toast('제목을 입력해주세요'); return; }
+  const editId = document.getElementById('note-edit-id').value;
+  const body = document.getElementById('n-body').value;
+  const refs = [..._noteRefs];
+  if (editId) {
+    state.notes = state.notes.map(n => n.id === editId ? {...n, title, body, refs} : n);
+  } else {
+    state.notes.unshift({ id: uid(), date: today(), title, body, refs, additions: [] });
+  }
+  save(); fsSet('notes', state.notes.find(n=>n.id===(editId||state.notes[0]?.id))); closeSheet('sheet-note'); renderNotes();
+  toast('저장됐어!');
+}
+
+function openNoteAdd(id) {
+  document.getElementById('note-add-target').value = id;
+  document.getElementById('na-body').value = '';
+  openSheet('sheet-note-add');
+}
+
+function saveNoteAdd() {
+  const id = document.getElementById('note-add-target').value;
+  const body = document.getElementById('na-body').value.trim();
+  if (!body) return;
+  state.notes = state.notes.map(n => {
+    if (n.id === id) return {...n, additions: [...(n.additions||[]), {date: today(), body}]};
+    return n;
+  });
+  save(); fsSet('notes', state.notes.find(n=>n.id===id)); closeSheet('sheet-note-add'); renderNotes();
+  toast('덧붙였어!');
+}
+
+function deleteNote(id) {
+  if (!confirm('삭제할까요?')) return;
+  state.notes = state.notes.filter(n => n.id !== id);
+  fsDel('notes', id); save(); renderNotes(); toast('삭제됐어');
+}
+
+function renderNotes() {
+  const list = document.getElementById('note-list');
+  if (!state.notes.length) {
+    list.innerHTML = `<div class="empty"><div class="empty-icon">💡</div>아직 발견이 없어<br>+ 버튼으로 첫 발견을 기록해봐</div>`;
+    return;
+  }
+  list.innerHTML = state.notes.map(n => {
+    const refsHtml = (n.refs||[]).map(r => {
+      const clickFn = r.type === 'recipe'
+        ? `openRecipeDetail('${r.id}')`
+        : `openLogDetail('${r.id}')`;
+      return `<div class="ref-badge" style="cursor:pointer;margin-bottom:4px;display:inline-flex;margin-right:4px" onclick="${clickFn}">
+        ${r.type === 'recipe' ? '🍞' : '📋'} ${r.label}
+      </div>`;
+    }).join('');
+    return `<div class="card">
+    <div style="padding:14px 16px">
+      <div class="note-date">${fmt(n.date)}</div>
+      <div class="note-title">${n.title}</div>
+      <div class="note-body">${n.body}</div>
+      ${refsHtml ? `<div style="margin-top:10px">${refsHtml}</div>` : ''}
+      ${(n.additions||[]).length ? `<div class="note-additions">${n.additions.map(a=>`
+        <div class="note-add-entry">
+          <div class="note-add-date">${fmt(a.date)}</div>
+          <div>${a.body}</div>
+        </div>`).join('')}</div>` : ''}
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <button class="btn-small" onclick="openNoteAdd('${n.id}')">+ 덧붙이기</button>
+        <button class="btn-small" onclick="openNoteForm('${n.id}')">수정</button>
+        <button class="btn-small" style="color:var(--red)" onclick="deleteNote('${n.id}')">삭제</button>
+      </div>
+    </div>
+  </div>`;
+  }).join('');
+}
+
+
+function defaultCategories() {
+  return [
+    { id: 'flour', name: '밀가루', props: [
+      { id: 'protein', name: '단백질 함량', unit: '%', type: 'number' },
+      { id: 'ash', name: '회분율', unit: '%', type: 'number' },
+      { id: 'brand', name: '원산지 / 브랜드', unit: '', type: 'text' }
+    ]},
+    { id: 'fat', name: '유지', props: [
+      { id: 'brand', name: '브랜드', unit: '', type: 'text' }
+    ]},
+    { id: 'other', name: '기타', props: [] }
+  ];
+}
+function getCategories() {
+  if (!state.categories) state.categories = defaultCategories();
+  return state.categories;
+}
+function getCat(id) { return getCategories().find(c => c.id === id); }
+
+// ===== TAGS =====
+let _activeTags = [];
+
+function renderTagChips() {
+  const wrap = document.getElementById('tag-chips');
+  if (!wrap) return;
+  const allTags = getTagPool();
+  wrap.innerHTML = allTags.map(t => {
+    const active = _activeTags.includes(t);
+    return `<label class="chip">
+      <input type="checkbox" ${active ? 'checked' : ''} onchange="toggleTag('${t}',this.checked)">
+      <span>${t}</span>
+      <button onclick="event.preventDefault();removeTagFromPool('${t}')"
+        style="background:none;border:none;color:var(--ink3);cursor:pointer;font-size:11px;padding:0 0 0 3px;line-height:1">×</button>
+    </label>`;
+  }).join('');
+}
+
+function getTagPool() {
+  if (!state.tagPool) state.tagPool = ['르방','이스트','버터빵','식빵','포카치아','통밀','호밀'];
+  return state.tagPool;
+}
+
+function toggleTag(tag, checked) {
+  if (checked) { if (!_activeTags.includes(tag)) _activeTags.push(tag); }
+  else { _activeTags = _activeTags.filter(t => t !== tag); }
+}
+
+function addTagChip() {
+  const input = document.getElementById('new-tag-input');
+  const val = input.value.trim();
+  if (!val) return;
+  const pool = getTagPool();
+  if (!pool.includes(val)) {
+    pool.push(val);
+    state.tagPool = pool;
+    save();
+  }
+  if (!_activeTags.includes(val)) _activeTags.push(val);
+  input.value = '';
+  renderTagChips();
+}
+
+function removeTagFromPool(tag) {
+  state.tagPool = getTagPool().filter(t => t !== tag);
+  _activeTags = _activeTags.filter(t => t !== tag);
+  save();
+  renderTagChips();
+}
+
+// ===== QUICK ING BUTTONS =====
+function defaultQuickBtns() {
+  return [
+    { id: 'q1', type: 'flour',   name: '밀가루' },
+    { id: 'q2', type: 'starter', name: '르방'   },
+    { id: 'q3', type: 'starter', name: '이스트' },
+    { id: 'q4', type: 'liquid',  name: '우유'   },
+    { id: 'q5', type: 'fat',     name: '버터'   },
+    { id: 'q6', type: 'other',   name: '설탕'   },
+  ];
+}
+
+function getQuickBtns() {
+  if (!state.quickIngBtns) state.quickIngBtns = defaultQuickBtns();
+  return state.quickIngBtns;
+}
+
+function renderQuickIngBtns() {
+  const wrap = document.getElementById('quick-ing-btns');
+  if (!wrap) return;
+  const btns = getQuickBtns();
+  wrap.innerHTML = btns.map(b =>
+    `<button class="btn-small" onclick="addIngRow('${b.type}',{name:'${b.name}',grams:''})">+ ${b.name}</button>`
+  ).join('') +
+  `<button class="btn-small" onclick="addIngRow('other')" style="background:none;border-style:dashed">+ 기타</button>` +
+  `<button class="btn-small" onclick="openQuickBtnEditor()" style="padding:5px 8px;color:var(--ink3)" title="버튼 편집">✎</button>`;
+}
+
+function openQuickBtnEditor() {
+  renderQuickBtnEditorList();
+  openSheet('sheet-quick-btns');
+}
+
+function renderQuickBtnEditorList() {
+  const wrap = document.getElementById('quick-btn-editor-list');
+  const btns = getQuickBtns();
+  wrap.innerHTML = btns.map((b, i) => `
+    <div class="ing-row" style="margin-bottom:8px" id="qb-${b.id}">
+      <div class="form-group" style="flex:2;margin:0">
+        <input class="form-input" value="${b.name}" onchange="updateQuickBtn('${b.id}','name',this.value)" placeholder="재료 이름"/>
+      </div>
+      <select class="form-select" style="flex:1;width:auto;padding:8px 6px;font-size:12px" onchange="updateQuickBtn('${b.id}','type',this.value)">
+        <option value="flour" ${b.type==='flour'?'selected':''}>가루류</option>
+        <option value="liquid" ${b.type==='liquid'?'selected':''}>액체류</option>
+        <option value="fat" ${b.type==='fat'?'selected':''}>유지류</option>
+        <option value="starter" ${b.type==='starter'?'selected':''}>발효종</option>
+        <option value="filling" ${b.type==='filling'?'selected':''}>필링</option>
+        <option value="other" ${b.type==='other'?'selected':''}>기타</option>
+      </select>
+      <button class="ing-row-del" onclick="deleteQuickBtn('${b.id}')">×</button>
+    </div>`).join('') +
+  `<div style="margin-top:10px;display:flex;gap:8px;align-items:center">
+    <input class="form-input" id="new-qb-name" placeholder="새 재료 이름" style="flex:1"/>
+    <button class="btn-small" onclick="addQuickBtn()" style="white-space:nowrap">+ 추가</button>
+  </div>`;
+}
+
+function updateQuickBtn(id, key, val) {
+  const btns = getQuickBtns();
+  const b = btns.find(x => x.id === id);
+  if (b) b[key] = val;
+  state.quickIngBtns = btns;
+  save();
+}
+
+function deleteQuickBtn(id) {
+  state.quickIngBtns = getQuickBtns().filter(b => b.id !== id);
+  save(); renderQuickBtnEditorList(); renderQuickIngBtns();
+}
+
+function addQuickBtn() {
+  const name = document.getElementById('new-qb-name').value.trim();
+  if (!name) return;
+  const btns = getQuickBtns();
+  btns.push({ id: uid(), type: 'other', name });
+  state.quickIngBtns = btns;
+  document.getElementById('new-qb-name').value = '';
+  save(); renderQuickBtnEditorList(); renderQuickIngBtns();
+}
+
+// ===== LIB =====
+function openLibForm(id) {
+  // populate category select from schema
+  const cats = getCategories();
+  const sel = document.getElementById('li-cat');
+  sel.innerHTML = cats.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+
+  document.getElementById('lib-edit-id').value = id || '';
+  if (id) {
+    const item = state.lib.find(x => x.id === id);
+    document.getElementById('lib-sheet-title').textContent = '재료 수정';
+    document.getElementById('li-name').value = item?.name || '';
+    document.getElementById('li-memo').value = item?.memo || '';
+    const catId = item?.cat || (cats[0]?.id || '');
+    sel.value = catId;
+    renderLibFields(item?.props || {});
+  } else {
+    document.getElementById('lib-sheet-title').textContent = '재료 추가';
+    document.getElementById('li-name').value = '';
+    document.getElementById('li-memo').value = '';
+    sel.value = cats[0]?.id || '';
+    renderLibFields({});
+  }
+  openSheet('sheet-lib');
+}
+
+function renderLibFields(existingProps) {
+  const catId = document.getElementById('li-cat').value;
+  const cat = getCat(catId);
+  const props = existingProps !== undefined ? existingProps : {};
+  const wrap = document.getElementById('li-dynamic-fields');
+  if (!cat || !cat.props.length) { wrap.innerHTML = ''; return; }
+  wrap.innerHTML = cat.props.map(p => `
+    <div class="form-group">
+      <label class="form-label">${p.name}${p.unit ? ' ('+p.unit+')' : ''}</label>
+      <input class="form-input" data-prop-id="${p.id}" type="${p.type === 'number' ? 'number' : 'text'}"
+        step="${p.type === 'number' ? 'any' : ''}"
+        value="${props[p.id] !== undefined ? props[p.id] : ''}" placeholder="${p.unit||''}" />
+    </div>`).join('');
+}
+
+function saveLib() {
+  const name = document.getElementById('li-name').value.trim();
+  if (!name) { toast('이름을 입력해주세요'); return; }
+  const editId = document.getElementById('lib-edit-id').value;
+  const catId = document.getElementById('li-cat').value;
+  const propInputs = document.querySelectorAll('#li-dynamic-fields [data-prop-id]');
+  const props = {};
+  propInputs.forEach(inp => { props[inp.dataset.propId] = inp.value; });
+  const item = {
+    id: editId || uid(),
+    name,
+    cat: catId,
+    props,
+    memo: document.getElementById('li-memo').value
+  };
+  if (editId) {
+    state.lib = state.lib.map(i => i.id === editId ? item : i);
+  } else {
+    state.lib.unshift(item);
+  }
+  save(); fsSet('lib', item); closeSheet('sheet-lib'); renderLib();
+  toast(editId ? '수정됐어!' : '추가됐어!');
+}
+
+function deleteLib(id) {
+  if (!confirm('삭제할까요?')) return;
+  state.lib = state.lib.filter(i => i.id !== id);
+  fsDel('lib', id); save(); renderLib(); toast('삭제됐어');
+}
+
+function renderLib() {
+  const list = document.getElementById('lib-list');
+  const cats = getCategories();
+  // group by category
+  const grouped = {};
+  cats.forEach(c => { grouped[c.id] = []; });
+  state.lib.forEach(item => {
+    if (!grouped[item.cat]) grouped[item.cat] = [];
+    grouped[item.cat].push(item);
+  });
+
+  let html = '';
+  cats.forEach(cat => {
+    const items = grouped[cat.id] || [];
+    if (!items.length) return;
+    html += `<div class="section-label">${cat.name}</div>`;
+    html += items.map(item => {
+      const propHtml = cat.props
+        .filter(p => item.props && item.props[p.id])
+        .map(p => `<span class="badge">${p.name} ${item.props[p.id]}${p.unit}</span>`)
+        .join('');
+      return `<div class="lib-card">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between">
+          <div style="flex:1">
+            <h3>${item.name}</h3>
+            ${propHtml ? `<div class="lib-tags" style="margin-top:6px">${propHtml}</div>` : ''}
+            ${item.memo ? `<p style="font-size:12px;color:var(--ink2);margin-top:8px;line-height:1.6">${item.memo}</p>` : ''}
+          </div>
+          <div style="display:flex;gap:6px;flex-shrink:0;margin-left:8px">
+            <button class="btn-small" onclick="openLibForm('${item.id}')">수정</button>
+            <button class="btn-small" style="color:var(--red)" onclick="deleteLib('${item.id}')">삭제</button>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  });
+  if (!html) {
+    list.innerHTML = `<div class="empty"><div class="empty-icon">🌾</div>아직 재료가 없어<br>+ 버튼으로 밀가루부터 추가해봐</div>`;
+    return;
+  }
+  list.innerHTML = html;
+}
+
+// ===== SCHEMA EDITOR =====
+function openSchemaEditor() {
+  renderSchemaEditor();
+  openSheet('sheet-schema');
+}
+
+function renderSchemaEditor() {
+  const cats = getCategories();
+  const wrap = document.getElementById('schema-cat-list');
+  wrap.innerHTML = cats.map(cat => `
+    <div class="detail-section" style="margin-bottom:12px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <h3 style="margin:0">${cat.name}</h3>
+        <button class="btn-small" style="color:var(--red)" onclick="deleteCategory('${cat.id}')">삭제</button>
+      </div>
+      <div id="props-${cat.id}">
+        ${cat.props.map(p => `
+          <div class="ing-row" style="margin-bottom:6px" id="prop-${cat.id}-${p.id}">
+            <div class="form-group" style="flex:2;margin:0">
+              <input class="form-input" value="${p.name}" onchange="updatePropName('${cat.id}','${p.id}',this.value)" placeholder="속성 이름"/>
+            </div>
+            <div class="form-group" style="flex:1;margin:0">
+              <input class="form-input" value="${p.unit}" onchange="updatePropUnit('${cat.id}','${p.id}',this.value)" placeholder="단위"/>
+            </div>
+            <select class="form-select" style="flex:1;width:auto;padding:8px 6px;font-size:12px" onchange="updatePropType('${cat.id}','${p.id}',this.value)">
+              <option value="text" ${p.type==='text'?'selected':''}>텍스트</option>
+              <option value="number" ${p.type==='number'?'selected':''}>숫자</option>
+            </select>
+            <button class="ing-row-del" onclick="deleteProp('${cat.id}','${p.id}')">×</button>
+          </div>`).join('')}
+      </div>
+      <button class="btn-small" onclick="addProp('${cat.id}')" style="margin-top:6px">+ 속성 추가</button>
+    </div>`).join('');
+}
+
+function addCategory() {
+  const name = document.getElementById('new-cat-name').value.trim();
+  if (!name) return;
+  const cats = getCategories();
+  cats.push({ id: uid(), name, props: [] });
+  state.categories = cats;
+  document.getElementById('new-cat-name').value = '';
+  save(); renderSchemaEditor(); renderLib();
+  toast('카테고리 추가됐어!');
+}
+
+function deleteCategory(catId) {
+  if (!confirm('카테고리를 삭제할까요? 이 카테고리의 재료도 모두 삭제돼요.')) return;
+  state.categories = getCategories().filter(c => c.id !== catId);
+  state.lib = state.lib.filter(i => i.cat !== catId);
+  save(); renderSchemaEditor(); renderLib();
+}
+
+function addProp(catId) {
+  const cats = getCategories();
+  const cat = cats.find(c => c.id === catId);
+  if (!cat) return;
+  cat.props.push({ id: uid(), name: '새 속성', unit: '', type: 'text' });
+  state.categories = cats;
+  save(); renderSchemaEditor();
+}
+
+function deleteProp(catId, propId) {
+  const cats = getCategories();
+  const cat = cats.find(c => c.id === catId);
+  if (!cat) return;
+  cat.props = cat.props.filter(p => p.id !== propId);
+  state.categories = cats;
+  save(); renderSchemaEditor();
+}
+
+function updatePropName(catId, propId, val) {
+  const cat = getCat(catId);
+  if (!cat) return;
+  const prop = cat.props.find(p => p.id === propId);
+  if (prop) prop.name = val;
+  state.categories = getCategories();
+  save();
+}
+function updatePropUnit(catId, propId, val) {
+  const cat = getCat(catId);
+  if (!cat) return;
+  const prop = cat.props.find(p => p.id === propId);
+  if (prop) prop.unit = val;
+  state.categories = getCategories();
+  save();
+}
+function updatePropType(catId, propId, val) {
+  const cat = getCat(catId);
+  if (!cat) return;
+  const prop = cat.props.find(p => p.id === propId);
+  if (prop) prop.type = val;
+  state.categories = getCategories();
+  save();
+}
+
+// ===== RENDER =====
+function render() {
+  renderRecipes();
+  renderLogs();
+  renderNotes();
+  renderLib();
+}
+
+// ===== JSON BACKUP =====
+function exportJSON() {
+  const data = JSON.stringify(state, null, 2);
+  const blob = new Blob([data], {type: 'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = '빵기록_' + today() + '.json';
+  a.click();
+  toast('JSON으로 저장됐어!');
+}
+function importJSON(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const imported = JSON.parse(ev.target.result);
+      if (!imported.recipes) { toast('올바른 파일이 아니야'); return; }
+      if (!confirm('현재 데이터를 덮어쓸까요?')) return;
+      Object.assign(state, imported);
+      save();
+      render();
+      toast('불러왔어!');
+    } catch(err) { toast('파일 읽기 실패'); }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+}
+
+// ===== FIREBASE =====
+var isLoggedIn = false;
+var currentUid = null;
+var _unsubs = [];
+
+function syncDot(color) {
+  const d = document.getElementById('sync-dot');
+  if (d) d.style.background = color;
+}
+
+function isStandalonePWA() {
+  return window.matchMedia('(display-mode: standalone)').matches
+      || window.navigator.standalone === true;
+}
+
+function doSignIn() {
+  const fb = window.__fb;
+  const provider = new fb.GoogleAuthProvider();
+  if (isStandalonePWA()) {
+    fb.signInWithRedirect(fb.auth, provider).catch(e => {
+      if (e.code === 'auth/unauthorized-domain') alert('이 기기에서는 로그인할 수 없어요');
+    });
+  } else {
+    fb.signInWithPopup(fb.auth, provider).catch(e => {
+      if (e.code === 'auth/unauthorized-domain') alert('이 기기에서는 로그인할 수 없어요');
+      else if (e.code !== 'auth/popup-closed-by-user') console.error(e);
+    });
+  }
+}
+
+function doSignOut() {
+  const fb = window.__fb;
+  stopFirestoreSync();
+  fb.signOut(fb.auth)
+    .then(() => fb.terminate(fb.db))
+    .then(() => fb.clearIndexedDbPersistence(fb.db))
+    .catch(e => console.warn(e))
+    .finally(() => { localStorage.clear(); location.reload(); });
+}
+
+function updateAuthUI(user) {
+  const btn = document.getElementById('auth-btn');
+  if (!btn) return;
+  if (user) {
+    const initial = (user.displayName || '?')[0];
+    btn.innerHTML = `<span style="display:inline-flex;align-items:center;gap:4px">
+      <span style="width:18px;height:18px;border-radius:50%;background:var(--accent);color:white;font-size:10px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0">${initial}</span>
+      <span>${(user.displayName||'').split(' ')[0]}</span>
+    </span>`;
+    btn.onclick = doSignOut;
+  } else {
+    btn.innerHTML = '로그인';
+    btn.onclick = doSignIn;
+  }
+}
+
+// Firestore 컬렉션 목록
+const FS_COLLECTIONS = ['recipes','logs','notes','lib'];
+const FS_SETTINGS_DOC = 'settings'; // categories, tagPool, quickIngBtns
+
+function startFirestoreSync(uid) {
+  syncDot('#FFC107');
+  const fb = window.__fb;
+
+  // settings (단일 문서)
+  const settingsRef = fb.doc(fb.db, 'users/' + uid + '/meta/settings');
+  const u0 = fb.onSnapshot(settingsRef, snap => {
+    if (snap.exists()) {
+      const d = snap.data();
+      if (d.categories) state.categories = d.categories;
+      if (d.tagPool) state.tagPool = d.tagPool;
+      if (d.quickIngBtns) state.quickIngBtns = d.quickIngBtns;
+      save();
+    }
+  });
+  _unsubs.push(u0);
+
+  // 컬렉션별 실시간 구독
+  FS_COLLECTIONS.forEach(col => {
+    const q = fb.query(
+      fb.collection(fb.db, 'users/' + uid + '/' + col),
+      fb.orderBy('createdAt', 'desc')
+    );
+    const u = fb.onSnapshot(q, snap => {
+      state[col] = snap.docs.map(d => ({ ...d.data(), id: d.id }));
+      save();
+      render();
+      syncDot('#4CAF50');
+    }, () => syncDot('#f44336'));
+    _unsubs.push(u);
+  });
+}
+
+function stopFirestoreSync() {
+  _unsubs.forEach(u => u());
+  _unsubs = [];
+}
+
+async function fsSet(col, item) {
+  if (!isLoggedIn) return;
+  const fb = window.__fb;
+  const ref = fb.doc(fb.db, 'users/' + currentUid + '/' + col + '/' + item.id);
+  const toSave = { ...item };
+  delete toSave.id;
+  if (!toSave.createdAt) toSave.createdAt = Date.now();
+  try { await fb.setDoc(ref, toSave); }
+  catch(e) { console.error('fsSet', e); syncDot('#f44336'); }
+}
+
+async function fsDel(col, id) {
+  if (!isLoggedIn) return;
+  const fb = window.__fb;
+  try { await fb.deleteDoc(fb.doc(fb.db, 'users/' + currentUid + '/' + col + '/' + id)); }
+  catch(e) { console.error('fsDel', e); }
+}
+
+async function fsSaveSettings() {
+  if (!isLoggedIn) return;
+  const fb = window.__fb;
+  const ref = fb.doc(fb.db, 'users/' + currentUid + '/meta/settings');
+  try {
+    await fb.setDoc(ref, {
+      categories: state.categories || null,
+      tagPool: state.tagPool || null,
+      quickIngBtns: state.quickIngBtns || null,
+      updatedAt: Date.now()
+    });
+  } catch(e) { console.error('fsSaveSettings', e); }
+}
+
+// save() 오버라이드 — localStorage + Firestore 동시 저장
+const _origSave = save;
+// save는 이미 정의돼 있으므로 패치
+function saveWithSync() {
+  localStorage.setItem('bread-log-v1', JSON.stringify(state));
+  fsSaveSettings();
+}
+
+// ===== INIT =====
+load();
+render();
+
+function initFirebase() {
+  const fb = window.__fb;
+  fb.getRedirectResult(fb.auth).catch(e => {
+    if (e.code === 'auth/unauthorized-domain') alert('이 기기에서는 로그인할 수 없어요');
+  });
+  fb.onAuthStateChanged(fb.auth, user => {
+    if (user) {
+      isLoggedIn = true;
+      currentUid = user.uid;
+      updateAuthUI(user);
+      startFirestoreSync(user.uid);
+    } else {
+      isLoggedIn = false;
+      currentUid = null;
+      updateAuthUI(null);
+      syncDot('#ccc');
+    }
+  });
+}
+
+if (window.__fb) {
+  initFirebase();
+} else {
+  window.addEventListener('firebase-ready', initFirebase, { once: true });
+}
+
+// ===== SERVICE WORKER =====
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').then(reg => {
+    reg.addEventListener('updatefound', () => {
+      const newWorker = reg.installing;
+      newWorker.addEventListener('statechange', () => {
+        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+          if (confirm('새 버전이 있어! 업데이트할까?')) {
+            newWorker.postMessage({ type: 'SKIP_WAITING' });
+            location.reload();
+          }
+        }
+      });
+    });
+  }).catch(() => {});
+}
+
+</script>
+</body>
+</html>
