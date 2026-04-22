@@ -1202,20 +1202,6 @@ function openRecipeDetail(id) {
     if (r.link) html += `<a href="${r.link}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--accent2);font-family:'DM Mono',monospace;word-break:break-all">🔗 ${r.link}</a>`;
     html += '</div>';
   }
-  if (r.source || r.link) {
-    html += `<div class="detail-section"><h3>출처</h3>`;
-    if (r.source) html += `<p class="detail-memo" style="margin-bottom:6px">${r.source}</p>`;
-    if (r.link) html += `<a href="${r.link}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--accent2);font-family:'DM Mono',monospace;word-break:break-all">🔗 ${r.link}</a>`;
-    html += `</div>`;
-  }
-  if (r.source || r.link) {
-    html += `<div class="detail-section"><h3>출처</h3>`;
-    if (r.source) html += `<p class="detail-memo" style="margin-bottom:6px">${r.source}</p>`;
-    if (r.link) html += `<a href="${r.link}" target="_blank" rel="noopener"
-      style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--accent2);font-family:'DM Mono',monospace;word-break:break-all">
-      🔗 ${r.link}</a>`;
-    html += `</div>`;
-  }
   if (r.memo) html += `<div class="detail-section"><h3>메모</h3><p class="detail-memo">${r.memo}</p></div>`;
 
   if (children.length) {
@@ -1332,6 +1318,54 @@ function saveLog() {
   toast('기록됐어!');
 }
 
+function editLog(id) {
+  const l = state.logs.find(x => x.id === id);
+  if (!l) return;
+  document.getElementById('log-edit-id').value = id;
+  document.getElementById('l-date').value = l.date || today();
+  document.getElementById('l-memo').value = l.memo || '';
+  document.getElementById('l-look').value = l.look || '';
+  document.getElementById('l-crumb').value = l.crumb || '';
+  document.getElementById('l-taste').value = l.taste || '';
+  document.getElementById('freshness-rows').innerHTML = '';
+  (l.freshness||[]).forEach(f => addFreshnessRow(f));
+  const sel = document.getElementById('l-recipe');
+  sel.innerHTML = '<option value="">선택 안 함</option>' + state.recipes.map(r=>`<option value="${r.id}">${r.name}</option>`).join('');
+  if (l.recipeId) sel.value = l.recipeId;
+  openSheet('sheet-log');
+}
+
+function deleteLog(id) {
+  if (!confirm('이 기록을 삭제할까요?')) return;
+  state.logs = state.logs.filter(l => l.id !== id);
+  fsDel('logs', id); save(); renderLogs();
+  toast('삭제됐어');
+}
+
+function editLog(id) {
+  const l = state.logs.find(x => x.id === id);
+  if (!l) return;
+  document.getElementById('log-edit-id').value = id;
+  document.getElementById('l-date').value = l.date || today();
+  document.getElementById('l-memo').value = l.memo || '';
+  document.getElementById('l-look').value = l.look || '';
+  document.getElementById('l-crumb').value = l.crumb || '';
+  document.getElementById('l-taste').value = l.taste || '';
+  document.getElementById('freshness-rows').innerHTML = '';
+  (l.freshness||[]).forEach(f => addFreshnessRow(f));
+  const sel = document.getElementById('l-recipe');
+  sel.innerHTML = '<option value="">선택 안 함</option>' + state.recipes.map(r=>`<option value="${r.id}">${r.name}</option>`).join('');
+  if (l.recipeId) sel.value = l.recipeId;
+  openSheet('sheet-log');
+}
+
+function deleteLog(id) {
+  if (!confirm('이 기록을 삭제할까요?')) return;
+  state.logs = state.logs.filter(l => l.id !== id);
+  fsDel('logs', id); save(); renderLogs();
+  toast('삭제됐어');
+}
+
 function renderLogs() {
   const list = document.getElementById('log-list');
   document.getElementById('log-count').textContent = `${state.logs.length}개의 기록`;
@@ -1361,6 +1395,10 @@ function renderLogs() {
         ${l.taste?`<div style="font-size:12px"><span style="color:var(--ink3);font-family:'DM Mono',monospace">맛   </span>${l.taste}</div>`:''}
       </div>` : ''}
       ${freshnessHtml ? `<div style="padding:0 16px 12px"><div style="font-size:10px;font-family:'DM Mono',monospace;color:var(--ink3);margin-bottom:6px">FRESHNESS</div>${freshnessHtml}</div>` : ''}
+      <div style="padding:0 16px 12px;display:flex;gap:8px">
+        <button class="btn-small" onclick="editLog('${l.id}')">수정</button>
+        <button class="btn-small" style="color:var(--red)" onclick="deleteLog('${l.id}')">삭제</button>
+      </div>
     </div>`;
   }).join('');
 }
