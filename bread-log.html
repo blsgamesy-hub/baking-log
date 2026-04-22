@@ -363,6 +363,58 @@
   }
   .toast.show { opacity: 1; }
 
+  /* 카드 액션 버튼 */
+  .action-btns {
+    display: flex;
+    gap: 6px;
+    padding: 10px 14px 14px;
+    border-top: 1px solid var(--line);
+    margin-top: 4px;
+  }
+  .action-btn {
+    flex: 1;
+    padding: 7px 0;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    background: var(--white);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--ink2);
+    cursor: pointer;
+    text-align: center;
+    transition: background 0.15s;
+    letter-spacing: 0.3px;
+  }
+  .action-btn:active { background: var(--bg2); }
+  .action-btn.danger { color: var(--red); border-color: #e8c4bc; }
+  .action-btn.primary { color: var(--accent); border-color: var(--warm); }
+
+  /* 카드 액션 버튼 */
+  .action-btns {
+    display: flex;
+    gap: 6px;
+    padding: 10px 14px 14px;
+    border-top: 1px solid var(--line);
+    margin-top: 4px;
+  }
+  .action-btn {
+    flex: 1;
+    padding: 7px 0;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    background: var(--white);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--ink2);
+    cursor: pointer;
+    text-align: center;
+    transition: background 0.15s;
+    letter-spacing: 0.3px;
+  }
+  .action-btn:active { background: var(--bg2); }
+  .action-btn.danger { color: var(--red); border-color: #e8c4bc; }
+  .action-btn.primary { color: var(--accent); border-color: var(--warm); }
+
   .ref-badge {
     display: inline-flex; align-items: center; gap: 4px;
     background: var(--bg2); border-radius: 6px;
@@ -810,6 +862,7 @@ function load() {
 }
 function save() {
   localStorage.setItem('bread-log-v1', JSON.stringify(state));
+  if (typeof fsSaveSettings === 'function') fsSaveSettings(); // 추가
 }
 function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
 function today() { return new Date().toISOString().slice(0,10); }
@@ -1134,10 +1187,11 @@ function saveRecipe() {
   toast(editId ? '수정됐어!' : '레시피 저장됐어!');
 }
 
-function deleteRecipe(id) {
+async function deleteRecipe(id) {
   if (!confirm('이 레시피를 삭제할까요?')) return;
   state.recipes = state.recipes.filter(r => r.id !== id);
-  fsDel('recipes', id); save(); closeSheet('sheet-recipe-detail'); renderRecipes();
+  save(); closeSheet('sheet-recipe-detail'); renderRecipes();
+  await fsDel('recipes', id);
   toast('삭제됐어');
 }
 
@@ -1335,34 +1389,11 @@ function editLog(id) {
   openSheet('sheet-log');
 }
 
-function deleteLog(id) {
+async function deleteLog(id) {
   if (!confirm('이 기록을 삭제할까요?')) return;
   state.logs = state.logs.filter(l => l.id !== id);
-  fsDel('logs', id); save(); renderLogs();
-  toast('삭제됐어');
-}
-
-function editLog(id) {
-  const l = state.logs.find(x => x.id === id);
-  if (!l) return;
-  document.getElementById('log-edit-id').value = id;
-  document.getElementById('l-date').value = l.date || today();
-  document.getElementById('l-memo').value = l.memo || '';
-  document.getElementById('l-look').value = l.look || '';
-  document.getElementById('l-crumb').value = l.crumb || '';
-  document.getElementById('l-taste').value = l.taste || '';
-  document.getElementById('freshness-rows').innerHTML = '';
-  (l.freshness||[]).forEach(f => addFreshnessRow(f));
-  const sel = document.getElementById('l-recipe');
-  sel.innerHTML = '<option value="">선택 안 함</option>' + state.recipes.map(r=>`<option value="${r.id}">${r.name}</option>`).join('');
-  if (l.recipeId) sel.value = l.recipeId;
-  openSheet('sheet-log');
-}
-
-function deleteLog(id) {
-  if (!confirm('이 기록을 삭제할까요?')) return;
-  state.logs = state.logs.filter(l => l.id !== id);
-  fsDel('logs', id); save(); renderLogs();
+  save(); renderLogs();
+  await fsDel('logs', id);
   toast('삭제됐어');
 }
 
@@ -1395,9 +1426,9 @@ function renderLogs() {
         ${l.taste?`<div style="font-size:12px"><span style="color:var(--ink3);font-family:'DM Mono',monospace">맛   </span>${l.taste}</div>`:''}
       </div>` : ''}
       ${freshnessHtml ? `<div style="padding:0 16px 12px"><div style="font-size:10px;font-family:'DM Mono',monospace;color:var(--ink3);margin-bottom:6px">FRESHNESS</div>${freshnessHtml}</div>` : ''}
-      <div style="padding:0 16px 12px;display:flex;gap:8px">
-        <button class="btn-small" onclick="editLog('${l.id}')">수정</button>
-        <button class="btn-small" style="color:var(--red)" onclick="deleteLog('${l.id}')">삭제</button>
+      <div class="action-btns">
+        <button class="action-btn primary" onclick="editLog('${l.id}')">✎ 수정</button>
+        <button class="action-btn danger" onclick="deleteLog('${l.id}')">× 삭제</button>
       </div>
     </div>`;
   }).join('');
@@ -1517,10 +1548,12 @@ function saveNoteAdd() {
   toast('덧붙였어!');
 }
 
-function deleteNote(id) {
+async function deleteNote(id) {
   if (!confirm('삭제할까요?')) return;
   state.notes = state.notes.filter(n => n.id !== id);
-  fsDel('notes', id); save(); renderNotes(); toast('삭제됐어');
+  save(); renderNotes();
+  await fsDel('notes', id);
+  toast('삭제됐어');
 }
 
 function renderNotes() {
@@ -1549,10 +1582,10 @@ function renderNotes() {
           <div class="note-add-date">${fmt(a.date)}</div>
           <div>${a.body}</div>
         </div>`).join('')}</div>` : ''}
-      <div style="display:flex;gap:8px;margin-top:12px">
-        <button class="btn-small" onclick="openNoteAdd('${n.id}')">+ 덧붙이기</button>
-        <button class="btn-small" onclick="openNoteForm('${n.id}')">수정</button>
-        <button class="btn-small" style="color:var(--red)" onclick="deleteNote('${n.id}')">삭제</button>
+      <div class="action-btns" style="margin-top:8px">
+        <button class="action-btn primary" onclick="openNoteAdd('${n.id}')">+ 덧붙이기</button>
+        <button class="action-btn" onclick="openNoteForm('${n.id}')">✎ 수정</button>
+        <button class="action-btn danger" onclick="deleteNote('${n.id}')">× 삭제</button>
       </div>
     </div>
   </div>`;
@@ -1774,10 +1807,12 @@ function saveLib() {
   toast(editId ? '수정됐어!' : '추가됐어!');
 }
 
-function deleteLib(id) {
+async function deleteLib(id) {
   if (!confirm('삭제할까요?')) return;
   state.lib = state.lib.filter(i => i.id !== id);
-  fsDel('lib', id); save(); renderLib(); toast('삭제됐어');
+  save(); renderLib();
+  await fsDel('lib', id);
+  toast('삭제됐어');
 }
 
 function renderLib() {
@@ -1809,8 +1844,8 @@ function renderLib() {
             ${item.memo ? `<p style="font-size:12px;color:var(--ink2);margin-top:8px;line-height:1.6">${item.memo}</p>` : ''}
           </div>
           <div style="display:flex;gap:6px;flex-shrink:0;margin-left:8px">
-            <button class="btn-small" onclick="openLibForm('${item.id}')">수정</button>
-            <button class="btn-small" style="color:var(--red)" onclick="deleteLib('${item.id}')">삭제</button>
+            <button onclick="openLibForm('${item.id}')" style="background:none;border:none;cursor:pointer;font-size:16px;color:var(--ink3);padding:4px">✏️</button>
+            <button onclick="deleteLib('${item.id}')" style="background:none;border:none;cursor:pointer;font-size:20px;color:var(--ink3);padding:4px;line-height:1">×</button>
           </div>
         </div>
       </div>`;
@@ -1836,7 +1871,7 @@ function renderSchemaEditor() {
     <div class="detail-section" style="margin-bottom:12px">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
         <h3 style="margin:0">${cat.name}</h3>
-        <button class="btn-small" style="color:var(--red)" onclick="deleteCategory('${cat.id}')">삭제</button>
+        <button onclick="deleteCategory('${cat.id}')" style="background:none;border:none;cursor:pointer;font-size:20px;color:var(--ink3);padding:4px;line-height:1">×</button>
       </div>
       <div id="props-${cat.id}">
         ${cat.props.map(p => `
@@ -1869,11 +1904,15 @@ function addCategory() {
   toast('카테고리 추가됐어!');
 }
 
-function deleteCategory(catId) {
+async function deleteCategory(catId) {
   if (!confirm('카테고리를 삭제할까요? 이 카테고리의 재료도 모두 삭제돼요.')) return;
+  const libIdsToDel = state.lib.filter(i => i.cat === catId).map(i => i.id);
   state.categories = getCategories().filter(c => c.id !== catId);
   state.lib = state.lib.filter(i => i.cat !== catId);
   save(); renderSchemaEditor(); renderLib();
+  await Promise.all(libIdsToDel.map(id => fsDel('lib', id)));
+  await fsSaveSettings();
+  toast('삭제됐어');
 }
 
 function addProp(catId) {
@@ -2086,13 +2125,6 @@ async function fsSaveSettings() {
   } catch(e) { console.error('fsSaveSettings', e); }
 }
 
-// save() 오버라이드 — localStorage + Firestore 동시 저장
-const _origSave = save;
-// save는 이미 정의돼 있으므로 패치
-function saveWithSync() {
-  localStorage.setItem('bread-log-v1', JSON.stringify(state));
-  fsSaveSettings();
-}
 
 // ===== INIT =====
 load();
@@ -2126,7 +2158,7 @@ if (window.__fb) {
 
 // ===== SERVICE WORKER =====
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js').then(reg => {
+  navigator.serviceWorker.register('/baking-log/sw.js').then(reg => {
     reg.addEventListener('updatefound', () => {
       const newWorker = reg.installing;
       newWorker.addEventListener('statechange', () => {
