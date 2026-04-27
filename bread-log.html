@@ -73,16 +73,16 @@
   }
   nav button {
     flex: 1; border: none; background: none;
-    padding: 10px 2px 14px;
+    padding: 12px 4px 16px;
     font-family: 'DM Mono', monospace;
-    font-size: 9px;
+    font-size: 10px;
     color: var(--ink3);
     cursor: pointer;
-    display: flex; flex-direction: column; align-items: center; gap: 3px;
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
     transition: color 0.2s;
   }
   nav button.active { color: var(--accent); }
-  nav button svg { width: 20px; height: 20px; }
+  nav button svg { width: 22px; height: 22px; }
 
   /* HEADER */
   .page-header {
@@ -121,9 +121,13 @@
     display: flex; align-items: center; justify-content: center;
     font-size: 20px; flex-shrink: 0;
   }
-  .card-title { font-size: 15px; font-weight: 600; margin-bottom: 2px; }
+  .card-title { font-size: 15px; font-weight: 600; margin-bottom: 2px; word-break: keep-all; }
   .card-sub { font-size: 11px; color: var(--ink3); font-family: 'DM Mono', monospace; }
   .card-meta { margin-left: auto; text-align: right; }
+  .card-tags {
+    padding: 0 16px 12px 16px;
+    display: flex; flex-wrap: wrap; gap: 4px;
+  }
   .badge {
     display: inline-block;
     padding: 2px 8px; border-radius: 20px;
@@ -251,6 +255,32 @@
     border-radius: 8px; background: none; cursor: pointer;
     color: var(--ink3); font-size: 18px; display: flex; align-items: center; justify-content: center;
     flex-shrink: 0;
+  }
+  .ing-drag-handle {
+    width: 24px; height: 36px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--ink3); font-size: 14px;
+    cursor: grab; flex-shrink: 0;
+    touch-action: none;
+    user-select: none; -webkit-user-select: none;
+  }
+  .ing-drag-handle:active { cursor: grabbing; }
+  .ing-row.dragging {
+    opacity: 0.5;
+  }
+  .ing-row.drag-ghost {
+    position: fixed; pointer-events: none; z-index: 9999;
+    background: var(--white); box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    border: 1px solid var(--accent); border-radius: 8px;
+    padding: 8px;
+  }
+  .ing-row.drop-target-above {
+    border-top: 2px solid var(--accent);
+    margin-top: 6px;
+  }
+  .ing-row.drop-target-below {
+    border-bottom: 2px solid var(--accent);
+    margin-bottom: 10px;
   }
 
   /* BTN */
@@ -421,134 +451,6 @@
     padding: 4px 10px; font-size: 11px; color: var(--ink2);
     font-family: 'DM Mono', monospace; margin-top: 4px;
   }
-
-  /* ===== KNOWLEDGE ===== */
-  .knowledge-toolbar {
-    padding: 12px 20px;
-    background: var(--white);
-    border-bottom: 1px solid var(--line);
-    position: sticky;
-    top: 92px;
-    z-index: 40;
-  }
-  .knowledge-toolbar .form-input {
-    margin-bottom: 10px;
-  }
-  .filter-chips {
-    display: flex;
-    gap: 6px;
-    overflow-x: auto;
-    padding-bottom: 2px;
-  }
-  .chip {
-    padding: 6px 14px;
-    border-radius: 16px;
-    border: 1px solid var(--line);
-    background: var(--bg);
-    font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    color: var(--ink2);
-    cursor: pointer;
-    white-space: nowrap;
-    transition: all 0.2s;
-  }
-  .chip.active {
-    background: var(--accent);
-    color: var(--white);
-    border-color: var(--accent);
-  }
-  .knowledge-card {
-    background: var(--white);
-    border: 1px solid var(--line);
-    border-radius: 12px;
-    padding: 14px 16px;
-    margin-bottom: 10px;
-    cursor: pointer;
-    transition: transform 0.15s;
-  }
-  .knowledge-card:active { transform: scale(0.98); }
-  .knowledge-card h3 {
-    font-size: 15px;
-    font-weight: 600;
-    margin-bottom: 4px;
-  }
-  .knowledge-card .summary {
-    font-size: 13px;
-    color: var(--ink2);
-    line-height: 1.5;
-  }
-  .knowledge-card .knowledge-meta {
-    margin-top: 8px;
-    display: flex;
-    gap: 10px;
-    font-family: 'DM Mono', monospace;
-    font-size: 10px;
-    color: var(--ink3);
-    flex-wrap: wrap;
-  }
-  .edited-badge, .custom-badge {
-    padding: 2px 6px;
-    border-radius: 4px;
-    background: var(--bg2);
-    color: var(--ink2);
-  }
-  .custom-badge {
-    background: var(--warm);
-    color: var(--white);
-  }
-  .dot-note {
-    color: var(--accent);
-    font-size: 16px;
-    vertical-align: middle;
-  }
-  .knowledge-detail-section {
-    margin-top: 20px;
-    padding-top: 16px;
-    border-top: 1px solid var(--line);
-  }
-  .knowledge-detail-section h4 {
-    font-size: 13px;
-    color: var(--ink2);
-    margin-bottom: 10px;
-    font-weight: 600;
-  }
-  .knowledge-content {
-    white-space: pre-line;
-    font-size: 14px;
-    line-height: 1.7;
-    color: var(--ink);
-  }
-  .user-note-block {
-    background: var(--bg2);
-    border-left: 3px solid var(--accent);
-    padding: 12px 14px;
-    border-radius: 6px;
-    font-size: 13px;
-    line-height: 1.6;
-    color: var(--ink);
-    white-space: pre-line;
-  }
-  .user-note-empty {
-    color: var(--ink3);
-    font-style: italic;
-    font-size: 13px;
-  }
-  .related-link {
-    display: inline-block;
-    background: var(--bg2);
-    border-radius: 8px;
-    padding: 6px 12px;
-    font-size: 12px;
-    color: var(--accent);
-    cursor: pointer;
-    margin: 3px 3px 3px 0;
-    font-family: 'DM Mono', monospace;
-    transition: background 0.15s;
-  }
-  .related-link:active { background: var(--bg3); }
-  #page-knowledge .content {
-    padding: 16px 20px;
-  }
 </style>
 
 <script type="module">
@@ -631,26 +533,6 @@ window.dispatchEvent(new Event('firebase-ready'));
   <div class="content" id="note-list"></div>
 </div>
 
-<div id="page-knowledge" class="page" style="display:none">
-  <div class="page-header">
-    <h1>📚 지식</h1>
-    <p id="knowledge-count">— 개의 항목</p>
-  </div>
-  <div class="content">
-    <!-- 검색 + 필터 -->
-    <div class="knowledge-toolbar">
-      <input type="text" id="knowledge-search" placeholder="🔍 검색..." class="form-input" oninput="renderKnowledge()"/>
-      <div class="filter-chips" id="knowledge-filters">
-        <button class="chip active" data-cat="all" onclick="setKnowledgeFilter(this)">전체</button>
-        <button class="chip" data-cat="technique" onclick="setKnowledgeFilter(this)">기법</button>
-        <button class="chip" data-cat="science" onclick="setKnowledgeFilter(this)">과학</button>
-        <button class="chip" data-cat="troubleshooting" onclick="setKnowledgeFilter(this)">문제해결</button>
-      </div>
-    </div>
-    <div id="knowledge-list"></div>
-  </div>
-</div>
-
 <div id="page-lib" class="page" style="display:none">
   <div class="page-header">
     <div style="display:flex;align-items:center;justify-content:space-between">
@@ -677,13 +559,6 @@ window.dispatchEvent(new Event('firebase-ready'));
   <button onclick="showPage('notes',this)">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
     발견
-  </button>
-  <button onclick="showPage('knowledge',this)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
-    </svg>
-    지식
   </button>
   <button onclick="showPage('lib',this)">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
@@ -854,13 +729,6 @@ window.dispatchEvent(new Event('firebase-ready'));
       <div id="freshness-rows"></div>
       <button class="btn-small" onclick="addFreshnessRow()">+ 시점 추가</button>
 
-      <div class="section-label">사용한 기법</div>
-      <div id="log-knowledge-selected" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px"></div>
-      <div style="display:flex;gap:8px;margin-bottom:12px">
-        <input class="form-input" id="log-knowledge-search" placeholder="🔍 기법 검색..." style="flex:1;font-size:13px" oninput="renderLogKnowledgePicker()"/>
-      </div>
-      <div id="log-knowledge-picker" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:4px"></div>
-
       <div class="btn-row">
         <button class="btn btn-secondary" onclick="closeSheet('sheet-log')">취소</button>
         <button class="btn btn-primary" onclick="saveLog()">저장</button>
@@ -892,7 +760,6 @@ window.dispatchEvent(new Event('firebase-ready'));
       <div style="display:flex;gap:8px;margin-bottom:4px">
         <button class="btn-small" onclick="addNoteRef('recipe')">+ 레시피</button>
         <button class="btn-small" onclick="addNoteRef('log')">+ 베이킹 기록</button>
-        <button class="btn-small" onclick="addNoteRef('knowledge')">+ 지식</button>
       </div>
       <div class="btn-row">
         <button class="btn btn-secondary" onclick="closeSheet('sheet-note')">취소</button>
@@ -909,9 +776,6 @@ window.dispatchEvent(new Event('firebase-ready'));
     <div class="sheet-title">
       <span id="ref-picker-title">참조 선택</span>
       <button class="sheet-close" onclick="closeSheet('sheet-ref-picker')">✕</button>
-    </div>
-    <div style="padding:10px 16px 0;border-bottom:1px solid var(--line)">
-      <input class="form-input" id="ref-picker-search" placeholder="🔍 검색..." style="font-size:13px" oninput="filterRefPicker()"/>
     </div>
     <div class="sheet-body" style="padding-top:8px">
       <div id="ref-picker-list"></div>
@@ -986,79 +850,6 @@ window.dispatchEvent(new Event('firebase-ready'));
   </div>
 </div>
 
-<!-- KNOWLEDGE DETAIL SHEET -->
-<div class="sheet-overlay" id="sheet-knowledge-detail">
-  <div class="sheet">
-    <div class="sheet-handle"></div>
-    <div class="sheet-title">
-      <span id="kd-title">지식 상세</span>
-      <div style="display:flex;gap:8px;align-items:center">
-        <button class="btn-small" id="kd-edit-btn" onclick="openKnowledgeFormFromDetail()">✏️ 수정</button>
-        <button class="sheet-close" onclick="closeSheet('sheet-knowledge-detail')">✕</button>
-      </div>
-    </div>
-    <div class="sheet-body" id="kd-body"></div>
-  </div>
-</div>
-
-<!-- KNOWLEDGE FORM SHEET -->
-<div class="sheet-overlay" id="sheet-knowledge-form">
-  <div class="sheet">
-    <div class="sheet-handle"></div>
-    <div class="sheet-title">
-      <span id="kf-title">지식 추가</span>
-      <button class="sheet-close" onclick="closeSheet('sheet-knowledge-form')">✕</button>
-    </div>
-    <div class="sheet-body">
-      <input type="hidden" id="kf-edit-id"/>
-      <div class="form-group">
-        <label class="form-label">카테고리</label>
-        <select class="form-select" id="kf-cat">
-          <option value="technique">기법</option>
-          <option value="science">발효·과학</option>
-          <option value="troubleshooting">문제해결</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label class="form-label">이름</label>
-        <input class="form-input" id="kf-name" placeholder="예: 오토리즈"/>
-      </div>
-      <div class="form-group">
-        <label class="form-label">별칭 (쉼표로 구분)</label>
-        <input class="form-input" id="kf-aliases" placeholder="autolyse, 자가분해"/>
-      </div>
-      <div class="form-group">
-        <label class="form-label">한 줄 요약</label>
-        <input class="form-input" id="kf-summary" placeholder="짧고 명확하게"/>
-      </div>
-      <div class="form-group">
-        <label class="form-label">본문</label>
-        <textarea class="form-textarea" id="kf-content" style="min-height:140px" placeholder="자세한 설명..."></textarea>
-      </div>
-
-      <div class="section-label">관련 항목</div>
-      <div id="kf-related-selected" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px"></div>
-      <input class="form-input" id="kf-related-search" placeholder="🔍 항목 검색..." style="font-size:13px;margin-bottom:6px" oninput="renderKfRelatedPicker()"/>
-      <div id="kf-related-list" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px"></div>
-
-      <div class="section-label">관련 재료</div>
-      <div id="kf-related-lib-selected" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px"></div>
-      <input class="form-input" id="kf-lib-search" placeholder="🔍 재료 검색..." style="font-size:13px;margin-bottom:6px" oninput="renderKfLibPicker()"/>
-      <div id="kf-related-lib-list" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px"></div>
-
-      <div class="section-label">✍️ 내 메모</div>
-      <div class="form-group">
-        <textarea class="form-textarea" id="kf-user-note" style="min-height:80px" placeholder="직접 경험하거나 덧붙이고 싶은 것..."></textarea>
-      </div>
-
-      <div class="btn-row">
-        <button class="btn btn-secondary" onclick="closeSheet('sheet-knowledge-form')">취소</button>
-        <button class="btn btn-primary" onclick="saveKnowledge()">저장</button>
-      </div>
-    </div>
-  </div>
-</div>
-
 <!-- SCHEMA EDITOR SHEET -->
 <div class="sheet-overlay" id="sheet-schema">
   <div class="sheet">
@@ -1081,517 +872,6 @@ window.dispatchEvent(new Event('firebase-ready'));
 </div>
 
 <script>
-// ===== KNOWLEDGE SEED =====
-const KNOWLEDGE_SEED = [
-  {
-    "id": "tech-autolyse",
-    "category": "technique",
-    "name": "오토리즈",
-    "aliases": ["autolyse", "자가분해"],
-    "summary": "물과 밀가루만 먼저 섞어 20~60분 휴지시키는 기법",
-    "content": "본반죽 전에 물과 밀가루만 대충 섞어두고 20~60분(길게는 수 시간) 휴지시키는 단계야. 이때는 소금, 이스트, 르방을 넣지 않아.\n\n휴지하는 동안 밀가루가 물을 충분히 흡수하고, 효소(프로테아제)가 글루테닌과 글리아딘을 재배치시켜서 글루텐이 저절로 형성돼. 본반죽 때 치대는 시간이 크게 줄어들고, 반죽이 부드럽고 신장성이 좋아져.\n\n고수분 반죽이나 통밀 비율이 높은 반죽에서 특히 효과가 커. 르방 반죽에서는 르방을 나중에 섞는 경우가 많아서 자연스럽게 오토리즈 단계가 생겨.",
-    "related": ["tech-fermentolyse", "tech-late-salt", "tech-stretch-fold", "sci-gluten-formation"],
-    "relatedLib": [],
-    "isBuiltIn": true,
-    "userNote": "",
-    "userExamples": []
-  },
-  {
-    "id": "tech-fermentolyse",
-    "category": "technique",
-    "name": "퍼멘톨리즈",
-    "aliases": ["fermentolyse"],
-    "summary": "오토리즈 단계에 르방까지 함께 넣고 휴지하는 방식",
-    "content": "물+밀가루+르방을 함께 섞어서 휴지시키는 방식. 오토리즈의 변형이야.\n\n순수 오토리즈와 달리 발효가 이미 시작된 상태로 글루텐이 형성되기 때문에, 반죽 풍미가 더 빨리 발달하고 전체 발효 시간도 단축돼. 다만 효소 활동 시간이 짧아져서 반죽의 신장성은 순수 오토리즈보다 약간 떨어질 수 있어.\n\n르방 비율이 높거나 전체 작업 시간을 줄이고 싶을 때 유용해.",
-    "related": ["tech-autolyse", "tech-late-salt"],
-    "relatedLib": [],
-    "isBuiltIn": true,
-    "userNote": "",
-    "userExamples": []
-  },
-  {
-    "id": "tech-late-salt",
-    "category": "technique",
-    "name": "후염법",
-    "aliases": ["late salt", "나중에 소금 넣기"],
-    "summary": "소금을 본반죽 후 20~30분 뒤에 섞어 넣는 기법",
-    "content": "소금을 처음부터 넣지 않고 오토리즈 단계 이후에 넣는 방식이야. 물에 소금을 녹여서 반죽에 붓고 pinch & fold로 섞거나, 그대로 뿌려 접어가며 녹여.\n\n소금은 글루텐을 단단하게 만들고 효소 활동을 억제하기 때문에, 오토리즈 단계에서는 빠져 있는 게 자가분해 효과를 극대화할 수 있어. 소금을 늦게 넣으면 반죽이 더 신장성 있게 뽑히고, 글루텐 망이 더 촘촘하게 형성돼.\n\n단점은 소금을 완전히 고르게 섞는 데 손이 좀 가. 덩어리져 있으면 그 부분만 발효가 늦어지거든.",
-    "related": ["tech-autolyse", "sci-salt-role"],
-    "relatedLib": [],
-    "isBuiltIn": true,
-    "userNote": "",
-    "userExamples": []
-  },
-  {
-    "id": "tech-stretch-fold",
-    "category": "technique",
-    "name": "스트레치 앤 폴드",
-    "aliases": ["stretch and fold", "S&F", "접기"],
-    "summary": "반죽을 당겨 접는 동작으로 글루텐을 발달시키는 기법",
-    "content": "반죽을 치대는 대신 발효 중간중간 당겨서 접는 방식이야. 보통 1차 발효 초반 1~2시간 동안 30분 간격으로 3~4번 진행해.\n\n방법: 볼 안에서 반죽 한쪽을 들어 올려서 반대편으로 접어. 이걸 90도씩 돌아가며 4면 모두 진행하면 한 세트야.\n\n치대기보다 글루텐에 가하는 스트레스가 적어서 고수분 반죽에 특히 좋아. 반죽의 결을 살리면서 구조를 만들 수 있고, 각 세트마다 반죽이 눈에 띄게 탄력 있어지는 게 보여.\n\n횟수와 간격은 반죽 상태에 맞춰. 너무 탄력이 잘 잡혔으면 빨리 끝내고, 느슨하면 한 번 더.",
-    "related": ["tech-coil-fold", "tech-lamination", "sci-gluten-formation"],
-    "relatedLib": [],
-    "isBuiltIn": true,
-    "userNote": "",
-    "userExamples": []
-  },
-  {
-    "id": "tech-coil-fold",
-    "category": "technique",
-    "name": "코일 폴드",
-    "aliases": ["coil fold"],
-    "summary": "반죽을 둘둘 말듯이 접는 변형 폴딩",
-    "content": "스트레치 앤 폴드의 변형. 반죽 중앙을 양손으로 들어 올리면 양쪽이 자연스럽게 떨어지는데, 이걸 반죽 아래로 말듯이 집어넣어. 90도 돌려서 한 번 더 반복.\n\n반죽을 덜 거칠게 다뤄서 발효 중에 생긴 가스를 더 많이 살릴 수 있어. 1차 발효 후반부나 고수분 반죽에 더 적합해.\n\n스트레치 앤 폴드가 초반의 글루텐 발달을 위한 거라면, 코일 폴드는 후반부 구조 유지를 위한 기법이라고 보면 돼.",
-    "related": ["tech-stretch-fold"],
-    "relatedLib": [],
-    "isBuiltIn": true,
-    "userNote": "",
-    "userExamples": []
-  },
-  {
-    "id": "tech-lamination",
-    "category": "technique",
-    "name": "라미네이션",
-    "aliases": ["lamination", "펼치기"],
-    "summary": "반죽을 얇게 펼쳤다가 다시 접는 기법",
-    "content": "1차 발효 중에 반죽을 넓은 면에 완전히 얇게 펼쳤다가 접어 다시 볼에 넣는 방식이야.\n\n반죽이 최대로 신장되면서 글루텐이 정렬되고, 큰 기공이 잘 형성돼. 또 이 단계에서 속재료(치즈, 올리브, 허브 등)를 고르게 분포시키기에도 좋아.\n\n통밀이나 호밀 비율이 높은 반죽보다는 흰 밀 위주의 고수분 반죽에서 효과가 커.",
-    "related": ["tech-stretch-fold", "tech-coil-fold"],
-    "relatedLib": [],
-    "isBuiltIn": true,
-    "userNote": "",
-    "userExamples": []
-  },
-  {
-    "id": "tech-cold-retard",
-    "category": "technique",
-    "name": "콜드 리타드",
-    "aliases": ["cold retard", "저온발효", "냉장발효"],
-    "summary": "반죽을 냉장고에 넣어 천천히 발효시키는 기법",
-    "content": "보통 성형 후 2차 발효 단계에서 반죽을 냉장고(3~6도)에 8~48시간 넣어두는 방식이야.\n\n저온에서는 효모 활동이 크게 느려지지만 유산균은 상대적으로 활동을 유지해. 그래서 효모 발효(부피)보다 유산균 발효(풍미)가 우세해져서, 깊은 풍미와 은은한 산미가 생겨.\n\n크러스트도 더 잘 나와. 냉장 중에 반죽 표면이 살짝 마르면서 스코어링이 예쁘게 열리고, 오븐스프링도 좋아져.\n\n작업 일정 관리에도 유리해. 밤에 성형해두고 아침에 구울 수 있어.",
-    "related": ["sci-yeast-temp", "sci-lab-temp", "sci-oven-spring"],
-    "relatedLib": [],
-    "isBuiltIn": true,
-    "userNote": "",
-    "userExamples": []
-  },
-  {
-    "id": "tech-bulk-ferment",
-    "category": "technique",
-    "name": "1차 발효",
-    "aliases": ["bulk fermentation", "벌크"],
-    "summary": "반죽 전체가 덩어리째 발효하는 단계",
-    "content": "본반죽이 끝난 뒤 분할/성형 전까지의 발효 단계야. 빵의 풍미와 구조가 대부분 이 단계에서 결정돼.\n\n끝나는 시점 판단은 시간보다 반죽 상태로 봐야 해:\n- 부피가 초기의 1.5~1.8배 (2배는 대개 과발효)\n- 표면이 돔처럼 부풀고 가장자리에 기포\n- 반죽을 살짝 흔들면 젤리처럼 찰랑거림\n- 손가락 테스트: 손가락으로 살짝 눌러봤을 때 천천히 반쯤 돌아오는 정도\n\n온도에 따라 시간이 크게 달라져. 24~26도에서 4~6시간, 20도에서 7~10시간이 대략적 기준.",
-    "related": ["tech-final-proof", "tru-overproof", "tru-underproof", "sci-yeast-temp"],
-    "relatedLib": [],
-    "isBuiltIn": true,
-    "userNote": "",
-    "userExamples": []
-  },
-  {
-    "id": "tech-final-proof",
-    "category": "technique",
-    "name": "2차 발효",
-    "aliases": ["final proof", "최종발효", "성형발효"],
-    "summary": "성형 후 굽기 직전까지의 발효 단계",
-    "content": "성형이 끝난 반죽을 바네통이나 팬에 넣고 굽기 전까지 발효시키는 단계.\n\n판단 기준:\n- 손가락으로 가볍게 눌러 천천히 반쯤 올라오면 적정\n- 눌러도 안 올라오면 과발효\n- 바로 튕겨 올라오면 발효 부족\n\n상온에서 진행하거나 콜드 리타드로 냉장 장시간 발효하기도 해. 냉장이면 굽기 전에 꺼내서 실온에 30분~1시간 두거나, 바로 구워도 돼(굽는 시간이 약간 길어짐).",
-    "related": ["tech-bulk-ferment", "tech-cold-retard", "tru-overproof"],
-    "relatedLib": [],
-    "isBuiltIn": true,
-    "userNote": "",
-    "userExamples": []
-  },
-  {
-    "id": "tech-shaping",
-    "category": "technique",
-    "name": "성형",
-    "aliases": ["shaping", "모양잡기"],
-    "summary": "분할한 반죽에 텐션을 만들어 모양을 잡는 과정",
-    "content": "반죽 표면에 긴장감(tension)을 만들어 껍질을 팽팽하게 잡는 작업이야. 이 긴장이 오븐에서 가스가 팽창할 때 반죽이 터지지 않고 잘 부풀도록 해줘.\n\n대표적인 모양:\n- 불(boule): 둥근 공 모양\n- 바따르(batard): 럭비공 모양\n- 바게트: 길쭉한 막대 모양\n\n핵심은 성형 시 손가락이나 스크레이퍼가 반죽 내부 기포를 너무 많이 터뜨리지 않으면서 표면 텐션을 만드는 것. 밀가루를 너무 많이 뿌리면 표면이 미끄러져 텐션이 안 잡히니까 조심해.",
-    "related": ["tech-bench-rest", "tech-scoring", "tru-shape-tear"],
-    "relatedLib": [],
-    "isBuiltIn": true,
-    "userNote": "",
-    "userExamples": []
-  },
-  {
-    "id": "tech-bench-rest",
-    "category": "technique",
-    "name": "벤치 레스트",
-    "aliases": ["bench rest", "프리셰이프", "preshape"],
-    "summary": "예비성형 후 20~30분 휴지시키는 단계",
-    "content": "분할한 반죽을 느슨하게 둥글려서(프리셰이프) 20~30분 휴지시키는 단계야. 그 다음 본격적인 성형에 들어가.\n\n이 휴지 동안 반죽이 이완돼서 최종 성형 시 잘 늘어나고 찢어지지 않아. 긴장된 상태에서 바로 성형하면 반죽이 저항해서 모양이 안 잡혀.\n\n반죽 표면에 마르지 않게 젖은 천이나 뚜껑으로 덮어둬.",
-    "related": ["tech-shaping"],
-    "relatedLib": [],
-    "isBuiltIn": true,
-    "userNote": "",
-    "userExamples": []
-  },
-  {
-    "id": "tech-scoring",
-    "category": "technique",
-    "name": "스코어링",
-    "aliases": ["scoring", "칼집", "에글레이즈"],
-    "summary": "굽기 직전 반죽 표면에 칼집을 내는 작업",
-    "content": "면도날(lame)이나 예리한 칼로 반죽 표면에 칼집을 내는 작업이야. 장식 목적도 있지만 실용적 이유가 더 중요해.\n\n왜 하는가:\n- 오븐에서 가스가 팽창할 때 터질 자리를 미리 열어줌\n- 스코어가 없으면 반죽의 약한 부분(옆구리 등)이 제멋대로 터짐\n- 칼집이 벌어지면서 이어(ear)가 생김 (크러스트가 들뜬 예쁜 부분)\n\n팁: 칼을 45도 각도로 눕혀서 얕지만 단호하게 그어. 머뭇거리면 칼이 끌려서 지저분해져.",
-    "related": ["tech-shaping", "sci-oven-spring"],
-    "relatedLib": [],
-    "isBuiltIn": true,
-    "userNote": "",
-    "userExamples": []
-  },
-  {
-    "id": "tech-levain-refresh",
-    "category": "technique",
-    "name": "르방 리프레시",
-    "aliases": ["refresh", "levain build", "르방 만들기"],
-    "summary": "굽기 전 르방을 새로 먹여 활성화시키는 과정",
-    "content": "본반죽 들어가기 전에 스타터 일부를 떼서 밀가루+물로 새로 먹이는 작업. 활동이 피크에 오른 르방을 본반죽에 쓰기 위한 거야.\n\n비율 예시 (1:1:1): 스타터 50g + 물 50g + 밀가루 50g → 24~26도에서 4~6시간\n\n피크 판단: 부피가 2~3배로 부풀고, 표면에 기포가 찬 채로 둥근 돔을 유지. 꺼지기 시작하면 지난 시점이야.\n\n본반죽 바로 전에 물에 띄워봐서 뜨면 사용 가능(플로트 테스트). 단, 100% 정확한 지표는 아니니까 부피와 향도 같이 봐.",
-    "related": ["tech-old-dough", "sci-yeast-temp", "sci-lab-temp"],
-    "relatedLib": [],
-    "isBuiltIn": true,
-    "userNote": "",
-    "userExamples": []
-  },
-  {
-    "id": "tech-old-dough",
-    "category": "technique",
-    "name": "올드 도우",
-    "aliases": ["old dough", "pâte fermentée", "묵은 반죽"],
-    "summary": "전날 반죽의 일부를 떼어 다음 반죽에 섞는 기법",
-    "content": "전날 만들어둔 반죽(또는 전날 발효 끝낸 반죽의 일부)을 냉장 보관했다가 새 반죽에 섞어 쓰는 방식이야.\n\n풍미가 깊어지고 발효가 빠르게 진행돼. 특히 이스트 반죽에서 풍미를 살리고 싶을 때 많이 쓰지만, 르방 반죽에도 활용 가능해. 과발효된 반죽을 그냥 버리기 아까울 때 일부를 올드 도우로 재활용하기도 해.\n\n비율은 전체 밀가루 대비 10~30% 정도가 일반적.",
-    "related": ["tech-levain-refresh", "tech-poolish", "tech-biga"],
-    "relatedLib": [],
-    "isBuiltIn": true,
-    "userNote": "",
-    "userExamples": []
-  },
-  {
-    "id": "tech-poolish",
-    "category": "technique",
-    "name": "풀리시",
-    "aliases": ["poolish"],
-    "summary": "물과 밀가루 1:1 비율 + 소량 이스트의 사전반죽",
-    "content": "밀가루:물 = 1:1 (100% 수화율)에 소량의 이스트를 넣고 8~16시간 발효시킨 사전반죽이야. 폴란드에서 유래했다고 해서 poolish.\n\n본반죽에 섞어 쓰면 풍미가 좋아지고 반죽의 신장성이 개선돼. 프랑스식 바게트에서 많이 쓰는 방식이야.\n\n상온에서 거품이 많이 오르고 중앙이 살짝 꺼지기 시작할 때가 피크야.",
-    "related": ["tech-biga", "tech-old-dough"],
-    "relatedLib": [],
-    "isBuiltIn": true,
-    "userNote": "",
-    "userExamples": []
-  },
-  {
-    "id": "tech-biga",
-    "category": "technique",
-    "name": "비가",
-    "aliases": ["biga"],
-    "summary": "수화율 50~60%의 단단한 이탈리안 사전반죽",
-    "content": "이탈리아식 사전반죽. 풀리시와 달리 수화율이 50~60%로 단단해. 밀가루 1kg에 물 500~600ml, 소량 이스트.\n\n상온에서 12~18시간, 때로는 냉장에서 더 길게 발효시켜. 치아바타, 포카치아, 이탈리안 식빵 등에 많이 쓰여.\n\n단단하기 때문에 발효가 천천히 진행되고 깊은 풍미가 쌓여.",
-    "related": ["tech-poolish", "tech-old-dough"],
-    "relatedLib": [],
-    "isBuiltIn": true,
-    "userNote": "",
-    "userExamples": []
-  },
-  {
-    "id": "tech-tangzhong",
-    "category": "technique",
-    "name": "탕종법",
-    "aliases": ["tangzhong", "유종", "물반죽"],
-    "summary": "밀가루 일부를 물과 함께 가열해 호화시킨 뒤 반죽에 섞는 기법",
-    "content": "밀가루 일부와 물을 1:5 비율 정도로 섞어 약불에서 65도까지 저으며 끓여 걸쭉한 페이스트를 만들어. 이걸 식혀서 본반죽에 섞어.\n\n가열된 전분이 호화(gelatinization)되면서 물을 더 많이 붙잡는 성질로 바뀌어, 최종 빵의 수분 함량이 올라가고 속살이 촉촉하고 부드러워져. 보관 중에도 잘 마르지 않아.\n\n일본식 소프트 식빵, 밀크빵, 브리오슈 계열에서 많이 써. 하드계 빵에는 잘 안 쓰여.",
-    "related": ["sci-gelatinization", "sci-hydration"],
-    "relatedLib": [],
-    "isBuiltIn": true,
-    "userNote": "",
-    "userExamples": []
-  },
-  {
-    "id": "sci-yeast-temp",
-    "category": "science",
-    "name": "효모의 활동 온도",
-    "aliases": ["yeast temperature"],
-    "summary": "효모는 5도 이하에서 거의 활동 안 함, 26~28도가 최적",
-    "content": "효모(사카로미세스 세레비지에)는 온도에 아주 민감해.\n\n- 0~4도: 거의 활동 안 함 (냉장 보관)\n- 4~10도: 매우 느린 활동\n- 10~20도: 느린 활동\n- 20~26도: 안정적인 활동\n- 26~28도: 최적 (활동이 가장 활발)\n- 30~35도: 빠르지만 풍미 떨어짐\n- 40도 이상: 활동 저하 시작\n- 50도 이상: 사멸\n\n발효 시간은 온도가 대략 8~10도 올라가면 반으로 줄어든다고 보면 돼. 저온 발효가 풍미 있는 건, 효모는 느려지는데 유산균은 상대적으로 활동을 유지해서 산미와 깊은 향이 쌓이기 때문이야.",
-    "related": ["sci-lab-temp", "tech-cold-retard", "tech-bulk-ferment"],
-    "relatedLib": [],
-    "isBuiltIn": true,
-    "userNote": "",
-    "userExamples": []
-  },
-  {
-    "id": "sci-lab-temp",
-    "category": "science",
-    "name": "유산균의 활동 온도",
-    "aliases": ["LAB", "lactic acid bacteria", "유산균"],
-    "summary": "유산균은 10도 이하에서 거의 활동 안 함, 효모보다 높은 온도 선호",
-    "content": "르방(사워도우)에 공생하는 유산균(Lactobacillus)은 효모와는 다른 온도 프로필을 가져.\n\n- 10도 이하: 거의 활동 안 함\n- 10~20도: 느리지만 활동\n- 20~30도: 안정적\n- 30~35도: 최적 (효모보다 높음)\n\n중요한 포인트 두 가지:\n1. 저온(4~10도)에서 효모는 거의 멈추지만 유산균은 살짝 더 버텨서, 냉장 발효 시 산미가 더 쌓여.\n2. 따뜻한 발효(28도 이상)에서는 유산균 활동이 효모를 앞지르면서 더 신 빵이 나와.\n\n르방의 산미 조절은 결국 온도 조절이야.",
-    "related": ["sci-yeast-temp", "tech-cold-retard"],
-    "relatedLib": [],
-    "isBuiltIn": true,
-    "userNote": "",
-    "userExamples": []
-  },
-  {
-    "id": "sci-gluten-formation",
-    "category": "science",
-    "name": "글루텐 형성 원리",
-    "aliases": ["gluten formation"],
-    "summary": "글루테닌과 글리아딘이 물과 만나 형성되는 탄성 망",
-    "content": "밀가루 안에는 글루테닌(탄성)과 글리아딘(신장성)이라는 두 단백질이 따로 존재해. 여기에 물이 닿으면 두 단백질이 재배치되면서 결합해 글루텐이라는 탄성 망을 만들어.\n\n이 망이 발효 가스를 가둬서 빵이 부풀 수 있어. 또 글루텐은 반죽이 끈적하게 뭉쳐지고 잘 늘어나게 만드는 핵심이야.\n\n글루텐은 세 가지 방식으로 발달해:\n1. 기계적: 치대기, 스트레치 앤 폴드\n2. 효소적: 오토리즈 동안 프로테아제가 재배치를 도움\n3. 시간: 긴 발효 동안 자연스럽게 구조가 강화됨\n\n밀가루의 단백질 함량이 높을수록 글루텐이 더 많이 형성돼. 강력분 12~14%, 중력분 9~11%, 박력분 7~9%.",
-    "related": ["tech-autolyse", "tech-stretch-fold", "tru-weak-gluten"],
-    "relatedLib": [],
-    "isBuiltIn": true,
-    "userNote": "",
-    "userExamples": []
-  },
-  {
-    "id": "sci-hydration",
-    "category": "science",
-    "name": "수화율(Hydration)",
-    "aliases": ["hydration", "수분율"],
-    "summary": "밀가루 대비 물의 비율. 반죽의 성격을 결정하는 핵심 변수",
-    "content": "전체 밀가루 무게 대비 물의 비율을 %로 나타낸 것. 르방이나 기타 습식 재료 속 물도 포함해서 계산해.\n\n예시: 밀가루 500g + 물 375g → 수화율 75%\n\n대략적인 구간:\n- 55~60%: 단단한 반죽 (바게트 일부, 이탈리안 비가)\n- 65~70%: 일반적 (일반 식빵, 하드롤)\n- 70~75%: 고수분 (깜빠뉴, 시골빵)\n- 75~85%: 매우 고수분 (치아바타, 슬랩, 포카치아)\n- 85% 이상: 극고수분 (일부 치아바타)\n\n수화율이 높을수록 기공이 크고 불규칙하게 열리고 속살이 촉촉해져. 대신 다루기 어려워져서 폴딩 기법과 시간에 의존해야 해.",
-    "related": ["sci-gluten-formation", "tech-stretch-fold"],
-    "relatedLib": [],
-    "isBuiltIn": true,
-    "userNote": "",
-    "userExamples": []
-  },
-  {
-    "id": "sci-fermentation-speed",
-    "category": "science",
-    "name": "발효 속도와 온도",
-    "aliases": ["fermentation speed"],
-    "summary": "온도가 8~10도 오르면 발효가 2배 빨라짐",
-    "content": "대략적 법칙: 온도가 8~10도 올라가면 발효 시간이 반으로 줄어들어.\n\n예: 24도에서 4시간이면, 16도에서는 8시간, 32도에서는 2시간.\n\n하지만 이게 단순 비례가 아니야. 온도별로 효모와 유산균의 활동 비율이 달라지기 때문에 같은 '부피 상승'이어도 풍미가 완전히 달라져. 낮은 온도에서 오래 발효시키면 유산균 우세로 산미와 복합적인 향이 나고, 높은 온도에서 빠르게 발효시키면 효모 우세로 밋밋한 풍미가 돼.\n\n실용적 의미:\n- 작업 시간을 맞추고 싶으면 온도로 조절\n- 풍미 깊게 하고 싶으면 온도 낮추고 시간 늘리기\n- 빨리 끝내고 싶으면 따뜻하게 유지 (단, 풍미 포기)",
-    "related": ["sci-yeast-temp", "sci-lab-temp", "tech-cold-retard"],
-    "relatedLib": [],
-    "isBuiltIn": true,
-    "userNote": "",
-    "userExamples": []
-  },
-  {
-    "id": "sci-maillard",
-    "category": "science",
-    "name": "메일라드 반응",
-    "aliases": ["maillard reaction"],
-    "summary": "아미노산과 당이 반응해 크러스트의 갈색과 향을 만듦",
-    "content": "140~165도에서 아미노산과 환원당이 반응해 갈색 색소와 수백 가지 향 화합물을 만들어내는 복합 반응이야. 크러스트의 갈색, 고소한 향, 복합적 풍미가 전부 여기서 나와.\n\n캐러멜화(당이 단독으로 갈변)와 달리 단백질이 참여하기 때문에 향이 훨씬 복잡해.\n\n잘 일어나게 하려면:\n- 오븐 온도 충분히 높게 (220~250도)\n- 표면이 너무 젖어 있지 않게 (단, 초반 스팀은 필요)\n- 반죽에 당이 어느 정도 있어야 함 (발효 중 잔당, 탕종 전분 분해물 등)\n\n표면이 물기가 많으면 100도에서 물이 끓어 증발하느라 140도까지 못 올라가서 메일라드가 안 일어나. 그래서 굽기 후반에는 스팀을 빼줘야 해.",
-    "related": ["sci-caramelization", "sci-oven-spring"],
-    "relatedLib": [],
-    "isBuiltIn": true,
-    "userNote": "",
-    "userExamples": []
-  },
-  {
-    "id": "sci-caramelization",
-    "category": "science",
-    "name": "캐러멜화",
-    "aliases": ["caramelization"],
-    "summary": "당이 고온에서 단독으로 갈변하는 반응",
-    "content": "당(특히 자당)이 160도 이상에서 단독으로 분해·재결합해 갈색 색소와 캐러멜 향을 만드는 반응이야. 메일라드와 달리 아미노산이 필요 없어.\n\n빵에서는 메일라드가 주연이고 캐러멜화는 조연 역할. 표면에 발린 계란물이나 우유 빵에서 좀 더 두드러져.\n\n단맛이 강한 반죽(브리오슈, 브런 등)에서는 캐러멜화가 색과 향에 큰 기여를 해.",
-    "related": ["sci-maillard"],
-    "relatedLib": [],
-    "isBuiltIn": true,
-    "userNote": "",
-    "userExamples": []
-  },
-  {
-    "id": "sci-oven-spring",
-    "category": "science",
-    "name": "오븐 스프링",
-    "aliases": ["oven spring"],
-    "summary": "굽기 초반 반죽이 급격히 부풀어 오르는 현상",
-    "content": "오븐에 들어간 뒤 처음 10~15분 동안 반죽이 급격히 부풀어 오르는 현상이야. 최종 빵 부피의 상당 부분이 이때 결정돼.\n\n메커니즘:\n1. 반죽 온도 상승 → 효모 마지막 활동으로 CO2 급증\n2. 기존 기포 속 가스와 수증기가 열팽창\n3. 60도 근처에서 효모 사멸 + 전분 호화 시작\n4. 글루텐이 열고정되면서 구조 확정\n\n잘 되게 하려면:\n- 스팀: 초반 10~15분 스팀 유지 (표면이 너무 빨리 굳으면 팽창 못함)\n- 충분한 예열: 오븐과 천판이 완전히 달궈져 있어야\n- 스코어링: 터질 자리 확보\n- 적정 발효: 과발효면 구조가 약해 못 버팀, 발효부족이면 팽창력 자체가 부족\n\n오븐 스프링이 잘 나오면 이어(ear)가 살고, 기공도 활짝 열려.",
-    "related": ["tech-scoring", "sci-maillard", "tru-no-spring"],
-    "relatedLib": [],
-    "isBuiltIn": true,
-    "userNote": "",
-    "userExamples": []
-  },
-  {
-    "id": "sci-gelatinization",
-    "category": "science",
-    "name": "전분 호화",
-    "aliases": ["gelatinization", "전분 젤라틴화"],
-    "summary": "60도 이상에서 전분 입자가 물을 흡수해 젤 상태가 됨",
-    "content": "밀가루 전분 입자가 60~80도에서 물을 흡수하고 부풀어 젤 상태로 변하는 현상. 이게 빵 속살(crumb)의 부드러운 질감을 만들어.\n\n탕종법이 이걸 이용하는 기법이야. 일부 밀가루를 미리 가열해서 호화시킨 뒤 반죽에 넣으면, 전분이 더 많은 물을 붙잡고 있어서 최종 빵이 촉촉하고 오래 부드러워져.\n\n굽기 과정에서는 60도 근처에서 전분 호화가 시작되고, 동시에 효모가 사멸하고 글루텐이 굳어. 이 세 가지가 동시에 일어나면서 구조가 확정돼.",
-    "related": ["tech-tangzhong", "sci-oven-spring"],
-    "relatedLib": [],
-    "isBuiltIn": true,
-    "userNote": "",
-    "userExamples": []
-  },
-  {
-    "id": "sci-salt-role",
-    "category": "science",
-    "name": "소금의 역할",
-    "aliases": ["salt role"],
-    "summary": "글루텐 강화, 발효 억제, 풍미 형성",
-    "content": "빵에서 소금은 단순 간 맞추기를 훨씬 넘는 역할을 해.\n\n1. 글루텐 강화: 글루텐 단백질에 이온이 붙어 망을 더 단단하게 만듦. 소금 없는 반죽은 축 처지고 힘이 없음.\n2. 발효 억제: 효모 활동을 20~30% 정도 늦춤. 천천히, 더 풍미 있게 발효되도록 해줌.\n3. 풍미: 빵의 단맛과 산미를 돋보이게 함. 소금 없으면 밋밋해서 아무 맛도 안 남.\n4. 보존: 수분 활성도를 약간 낮춰 곰팡이 발생 지연.\n\n일반적으로 밀가루 대비 1.8~2.2%가 표준. 1.5% 미만은 맛이 안 살고 2.5% 이상은 발효가 심하게 억제되고 짠맛이 튐.",
-    "related": ["tech-late-salt", "sci-gluten-formation"],
-    "relatedLib": [],
-    "isBuiltIn": true,
-    "userNote": "",
-    "userExamples": []
-  },
-  {
-    "id": "sci-ph-ferment",
-    "category": "science",
-    "name": "pH와 발효",
-    "aliases": ["pH fermentation"],
-    "summary": "발효가 진행될수록 pH가 낮아져 반죽이 산성이 됨",
-    "content": "발효가 진행되면 유산균과 효모가 유기산(젖산, 초산)을 만들어내서 반죽의 pH가 점점 낮아져. 새로 섞은 반죽 pH 6.0 근처 → 발효 끝 무렵 4.0~4.5.\n\npH가 낮아지면:\n- 글루텐이 약간 약해짐 (과산성 반죽이 축 처지는 이유)\n- 풍미 산미 증가\n- 유해 미생물 활동 억제\n- 전분 분해 효소 활성이 달라짐\n\n과발효는 결국 pH가 너무 많이 떨어져 글루텐 망이 약해진 상태이기도 해. 반대로 pH가 충분히 안 내려갔으면 풍미가 덜 발달.\n\n르방 반죽이 이스트 반죽보다 낮은 pH에서 끝나기 때문에, 같은 부피 상승이어도 구조적으로 다르게 느껴져.",
-    "related": ["sci-lab-temp", "tru-overproof"],
-    "relatedLib": [],
-    "isBuiltIn": true,
-    "userNote": "",
-    "userExamples": []
-  },
-  {
-    "id": "sci-protein-content",
-    "category": "science",
-    "name": "밀가루 단백질 함량",
-    "aliases": ["protein content", "단백질"],
-    "summary": "밀가루의 단백질 %가 빵의 구조를 결정하는 첫 변수",
-    "content": "밀가루에 적힌 단백질 함량은 글루텐 형성 잠재력을 가늠하는 지표야.\n\n- 박력분 (7~9%): 케이크, 쿠키. 글루텐 적음\n- 중력분 (9~11%): 국수, 만두피, 소프트롤\n- 강력분 (11~13%): 식빵, 하드롤\n- 제빵강력분 (13~15%): 하드계 유럽식 빵\n\n고수분 반죽일수록 높은 단백질이 필요해. 글루텐 망이 많은 물을 붙잡아야 하니까.\n\n통밀이나 호밀은 단백질 함량 수치와 상관없이 글루텐 형성이 떨어져(껍질 부분이 방해). 그래서 통밀 비율 높은 반죽은 단백질 높은 흰 밀과 블렌드하는 게 일반적.",
-    "related": ["sci-gluten-formation", "sci-hydration"],
-    "relatedLib": [],
-    "isBuiltIn": true,
-    "userNote": "",
-    "userExamples": []
-  },
-  {
-    "id": "tru-overproof",
-    "category": "troubleshooting",
-    "name": "과발효 신호",
-    "aliases": ["overproof", "overproofed"],
-    "summary": "축 처짐, 시큼한 냄새, 큰 기공 없이 꺼짐",
-    "content": "과발효된 반죽의 전형적 신호:\n\n1. 부피가 너무 커져 있음 (2배 이상)\n2. 표면이 꺼지거나 평평해짐 (돔 모양 사라짐)\n3. 손가락 눌렀을 때 천천히도 안 올라오고 그대로 파인 자국\n4. 반죽이 축 처지고 끈적하게 손에 달라붙음\n5. 시큼한 냄새 (초기엔 좋은 향, 심해질수록 시큼)\n6. 성형 시 텐션이 안 잡히고 계속 찢어짐\n\n왜 그러는지: 효모가 당을 다 소진하고 유산균이 과도하게 산을 만들어 pH가 너무 낮아지면, 글루텐 망이 약해져 구조가 무너져.\n\n구조 시도:\n- 초기 과발효: 강한 폴드로 구조 회복 가능\n- 심한 과발효: 포카치아/치아바타/슬랩 등 원래 느슨한 빵으로 전환\n- 매우 심한 과발효: 올드 도우로 일부만 재활용, 나머지는 납작빵/크래커",
-    "related": ["tru-underproof", "sci-ph-ferment", "tech-bulk-ferment"],
-    "relatedLib": [],
-    "isBuiltIn": true,
-    "userNote": "",
-    "userExamples": []
-  },
-  {
-    "id": "tru-underproof",
-    "category": "troubleshooting",
-    "name": "발효 부족 신호",
-    "aliases": ["underproof", "underproofed"],
-    "summary": "부피 덜 커짐, 손가락 테스트 바로 튕김, 조밀한 크럼",
-    "content": "발효가 부족한 반죽의 신호:\n\n1. 부피가 별로 안 커짐 (1.3배 미만)\n2. 손가락으로 눌렀을 때 바로 튕겨서 원래 상태로\n3. 표면이 팽팽하게 당겨져 있음\n4. 구운 뒤 속살이 조밀하고 무겁고 떡진 느낌\n5. 기공이 거의 없거나 아주 작음\n6. 옆구리나 바닥이 터짐 (위로 못 올라가서 엉뚱한 데로 터짐)\n\n원인:\n- 시간 부족\n- 온도 너무 낮음\n- 르방/이스트 활성도 낮음\n- 소금 과다\n\n해결:\n- 성형 전이면 더 기다려\n- 이미 구웠으면 다음엔 온도/시간 조정 필요 (발효 시 반죽 상태를 보고 결정)",
-    "related": ["tru-overproof", "tech-bulk-ferment", "sci-yeast-temp"],
-    "relatedLib": [],
-    "isBuiltIn": true,
-    "userNote": "",
-    "userExamples": []
-  },
-  {
-    "id": "tru-weak-gluten",
-    "category": "troubleshooting",
-    "name": "글루텐 발달 부족",
-    "aliases": ["weak gluten"],
-    "summary": "반죽이 축 처지고 탄성이 없음",
-    "content": "신호:\n- 반죽을 들어올려도 탄성 없이 흘러내림\n- 윈도우페인 테스트(반죽을 얇게 펼쳐 빛이 비치는지) 실패\n- 성형 시 텐션이 안 잡힘\n- 구운 뒤 납작한 빵\n\n원인:\n1. 치대기/폴딩 부족\n2. 오토리즈 시간 부족\n3. 단백질 함량 낮은 밀가루 사용\n4. 과한 수분\n5. 과발효로 글루텐 망이 이미 무너짐 (이건 별개 문제)\n\n해결:\n- 스트레치 앤 폴드 1~2세트 추가\n- 다음엔 오토리즈 시간 늘리기\n- 단백질 함량 맞는 밀가루 확인\n- 고수분 반죽이면 기법과 시간에 더 의존 (치대기 대신 폴딩+시간)",
-    "related": ["sci-gluten-formation", "sci-protein-content", "tech-stretch-fold"],
-    "relatedLib": [],
-    "isBuiltIn": true,
-    "userNote": "",
-    "userExamples": []
-  },
-  {
-    "id": "tru-no-spring",
-    "category": "troubleshooting",
-    "name": "오븐 스프링 부족",
-    "aliases": ["no oven spring"],
-    "summary": "오븐에서 덜 부풀어 납작하고 조밀함",
-    "content": "신호: 오븐에 넣기 전보다 부피가 크게 안 늘고, 이어(ear)도 안 생기고, 단면이 조밀함.\n\n원인 체크리스트:\n1. 과발효: 구조가 약해서 못 버팀 → 발효 시점 조정\n2. 발효 부족: 팽창력 자체가 부족 → 더 기다리기\n3. 오븐 예열 부족: 천판과 오븐이 충분히 달궈져야 → 30분 이상 예열\n4. 스팀 부족: 표면이 너무 빨리 굳으면 못 늘어남 → 뚜껑 있는 더치오븐, 물 뿌리기, 얼음 넣기\n5. 스코어링 부족: 터질 자리가 없음 → 더 단호하게 긋기\n6. 성형 시 텐션 부족: 부푸는 힘이 분산됨 → 성형 연습\n\n대개 한 가지가 아니라 여러 요인이 겹쳐. 하나씩 바꿔보면서 원인 좁혀봐.",
-    "related": ["sci-oven-spring", "tru-overproof", "tru-underproof", "tech-scoring"],
-    "relatedLib": [],
-    "isBuiltIn": true,
-    "userNote": "",
-    "userExamples": []
-  },
-  {
-    "id": "tru-thick-crust",
-    "category": "troubleshooting",
-    "name": "크러스트가 너무 두꺼움",
-    "aliases": ["thick crust"],
-    "summary": "크러스트가 딱딱하고 두껍게 나옴",
-    "content": "원인과 해결:\n\n1. 굽는 시간 과다: 같은 온도에서 시간이 길수록 크러스트가 두꺼워져. 색이 났으면 좀 일찍 꺼내기.\n2. 온도 너무 낮음: 낮은 온도에서 오래 구우면 속이 마르고 크러스트가 두꺼워. 20도씩 올려보기.\n3. 스팀 부족: 초반 스팀이 없으면 표면이 빨리 굳어 두꺼워져. 더치오븐 뚜껑, 물 뿌리기, 얼음 활용.\n4. 반죽 건조: 벤치 레스트나 2차 발효에서 덮개 부실 → 표면 마름 → 크러스트 두꺼움.\n\n원하는 두께로 가려면 온도와 스팀 조합을 기록해가며 조정해.",
-    "related": ["sci-oven-spring", "sci-maillard"],
-    "relatedLib": [],
-    "isBuiltIn": true,
-    "userNote": "",
-    "userExamples": []
-  },
-  {
-    "id": "tru-dense-crumb",
-    "category": "troubleshooting",
-    "name": "속살이 너무 조밀함",
-    "aliases": ["dense crumb"],
-    "summary": "기공이 작고 빵이 묵직함",
-    "content": "원인:\n1. 발효 부족: 가장 흔한 원인. 반죽 상태 보고 발효 더 기다리기.\n2. 성형 시 기공 다 빼기: 너무 세게 다뤄 가스 날아감. 부드럽게 성형.\n3. 글루텐 발달 부족: 기포를 잡아줄 망이 약함.\n4. 오븐 스프링 실패: 팽창 기회 자체를 놓침.\n5. 수화율 낮음: 물이 적으면 기공이 잘 안 열려.\n\n원하는 게 촉촉하고 열린 크럼이면 수화율을 70%대로 올리고 폴딩 기법을 강화해봐.",
-    "related": ["tru-underproof", "sci-hydration", "tru-no-spring"],
-    "relatedLib": [],
-    "isBuiltIn": true,
-    "userNote": "",
-    "userExamples": []
-  },
-  {
-    "id": "tru-sticky-dough",
-    "category": "troubleshooting",
-    "name": "반죽이 너무 끈적함",
-    "aliases": ["sticky dough"],
-    "summary": "손과 작업대에 심하게 달라붙음",
-    "content": "원인:\n1. 수화율이 레시피보다 높음: 밀가루 종류가 달라서 같은 수치여도 더 묽게 느껴질 수 있음.\n2. 글루텐 발달 부족: 망이 안 만들어져 물이 붙잡히지 않음.\n3. 과발효: 글루텐이 분해되어 끈적해짐 (이건 과발효 신호)\n4. 밀가루 단백질 낮음: 수화율을 버티지 못함.\n\n대처:\n- 초반 끈적: 젖은 손/스크레이퍼로 작업. 밀가루 추가는 신중히(수화율 바뀜).\n- 폴드 후에도 끈적: 폴드 한 세트 더 또는 시간 더 주기.\n- 과발효 끈적: 이미 구조 손상. 납작빵으로 전환.\n\n고수분 반죽(75%+)은 원래 끈적해. 손을 젖게 해서 반죽 위에 가볍게 얹듯이 다뤄.",
-    "related": ["sci-hydration", "tru-weak-gluten", "tru-overproof"],
-    "relatedLib": [],
-    "isBuiltIn": true,
-    "userNote": "",
-    "userExamples": []
-  },
-  {
-    "id": "tru-shape-tear",
-    "category": "troubleshooting",
-    "name": "성형 시 찢어짐",
-    "aliases": ["shape tearing"],
-    "summary": "성형 중 반죽 표면이 자꾸 찢어짐",
-    "content": "원인:\n1. 벤치 레스트 부족: 반죽이 긴장된 채로 바로 성형하면 저항해 찢어짐. 20~30분 쉬게 하기.\n2. 글루텐 과도 발달 + 휴지 부족: 치대기가 많았는데 쉼이 짧으면 탄성이 너무 강해 찢어짐.\n3. 반죽 건조: 표면이 마르면 유연성 잃음. 덮개 확인.\n4. 밀가루 과다 사용: 작업대/반죽에 밀가루 많이 뿌리면 표면이 갈라짐.\n5. 과발효: 이미 구조 약해진 경우.\n\n해결:\n- 벤치 레스트 시간 늘리기\n- 표면이 마르지 않게 덮기\n- 밀가루 최소화\n- 성형 시 너무 세게 당기지 않기",
-    "related": ["tech-shaping", "tech-bench-rest", "tru-overproof"],
-    "relatedLib": [],
-    "isBuiltIn": true,
-    "userNote": "",
-    "userExamples": []
-  },
-  {
-    "id": "tru-pale-crust",
-    "category": "troubleshooting",
-    "name": "크러스트에 색이 안 남",
-    "aliases": ["pale crust"],
-    "summary": "다 구워졌는데 창백하고 갈색이 덜 남",
-    "content": "원인:\n1. 오븐 온도 낮음: 메일라드가 충분히 안 일어남. 20~30도 올리고 시간 줄이기.\n2. 잔당 부족: 과발효되면 효모가 당을 다 소진해서 색 안 남. 발효 시점 조정.\n3. 스팀 너무 오래: 후반까지 스팀 있으면 표면이 젖어 있어 갈변 안 됨. 15분 뒤 스팀 빼기.\n4. 굽는 시간 부족: 속만 익고 표면 반응은 덜 일어남.\n\n팁: 색이 충분히 날 때까지 좀 더 굽는 걸 두려워하지 마. 진한 갈색까지 가야 향이 풍부해져.",
-    "related": ["sci-maillard", "tru-overproof"],
-    "relatedLib": [],
-    "isBuiltIn": true,
-    "userNote": "",
-    "userExamples": []
-  },
-  {
-    "id": "tru-side-blowout",
-    "category": "troubleshooting",
-    "name": "옆구리/바닥이 터짐",
-    "aliases": ["side blowout", "blowout"],
-    "summary": "위가 아니라 옆이나 아래로 터져 나옴",
-    "content": "원인:\n1. 스코어링 부족: 위에 터질 자리가 없으니 반죽이 약한 부분(옆)으로 터짐. 더 단호하게, 45도 각도로 긋기.\n2. 스코어링 너무 얕음: 표면만 긁혀서 기능 못 함. 면도날을 빠르고 깊게.\n3. 성형 텐션 불균형: 한쪽만 팽팽하면 다른 쪽으로 터짐.\n4. 발효 부족: 위로 올라갈 힘이 부족해 엉뚱한 데로 터짐.\n5. 예열 부족: 위쪽 열이 약하면 아래로 밀려 나감.\n\n해결: 스코어링 연습이 제일 효과적. 나머지는 발효 시점과 성형의 균형 문제.",
-    "related": ["tech-scoring", "tech-shaping", "tru-underproof"],
-    "relatedLib": [],
-    "isBuiltIn": true,
-    "userNote": "",
-    "userExamples": []
-  }
-];
-
 // ===== STATE =====
 let state = {
   page: 'recipes',
@@ -1599,7 +879,6 @@ let state = {
   logs: [],
   notes: [],
   lib: [],
-  knowledge: [],
   categories: null,
   tagPool: null,
   quickIngBtns: null
@@ -1610,14 +889,6 @@ function load() {
     const s = localStorage.getItem('bread-log-v1');
     if (s) state = { ...state, ...JSON.parse(s) };
   } catch(e) {}
-  // knowledge 시드 주입: 없거나 빈 배열이면 KNOWLEDGE_SEED 복사
-  if (!state.knowledge || state.knowledge.length === 0) {
-    state.knowledge = JSON.parse(JSON.stringify(KNOWLEDGE_SEED)).map(k => ({
-      ...k,
-      createdAt: k.createdAt || today()
-    }));
-    save();
-  }
 }
 function save() {
   localStorage.setItem('bread-log-v1', JSON.stringify(state));
@@ -1646,7 +917,6 @@ function openFab() {
   if (p==='recipes') openRecipeForm();
   else if (p==='logs') openLogForm();
   else if (p==='notes') openNoteForm();
-  else if (p==='knowledge') openKnowledgeForm();
   else if (p==='lib') openLibForm();
 }
 
@@ -1777,6 +1047,7 @@ function addIngRow(type, data) {
     `<option value="${t.id}" ${t.id === div.dataset.type ? 'selected' : ''}>${t.label}</option>`
   ).join('');
   div.innerHTML = `
+    <div class="ing-drag-handle" data-drag-handle>⋮⋮</div>
     <div style="display:flex;flex-direction:column;gap:4px;flex:1;min-width:0">
       <select class="form-select" style="font-size:11px;padding:4px 6px;border-radius:6px;background:${info.color};border-color:transparent"
         onchange="updateIngType('ing-${id}',this.value)">${typeOptions}</select>
@@ -1789,6 +1060,7 @@ function addIngRow(type, data) {
     <button class="ing-row-del" onclick="document.getElementById('ing-${id}').remove();calcPct()">×</button>
   `;
   wrap.appendChild(div);
+  attachIngDrag(div);
   calcPct();
 }
 
@@ -1799,6 +1071,95 @@ function updateIngType(rowId, newType) {
   const info = ingTypeInfo(newType);
   row.querySelector('select').style.background = info.color;
   calcPct();
+}
+
+// ===== Ingredient row drag-to-reorder (pointer events, works on touch + mouse) =====
+function attachIngDrag(row) {
+  const handle = row.querySelector('[data-drag-handle]');
+  if (!handle) return;
+  let pointerId = null;
+  let startY = 0;
+  let dragging = false;
+  let lastTarget = null; // {row, position: 'above'|'below'}
+
+  function clearTargets() {
+    document.querySelectorAll('#ing-rows .ing-row').forEach(r => {
+      r.classList.remove('drop-target-above', 'drop-target-below');
+    });
+  }
+
+  handle.addEventListener('pointerdown', (e) => {
+    e.preventDefault();
+    pointerId = e.pointerId;
+    startY = e.clientY;
+    dragging = false;
+    handle.setPointerCapture(pointerId);
+  });
+
+  handle.addEventListener('pointermove', (e) => {
+    if (pointerId !== e.pointerId) return;
+    const dy = e.clientY - startY;
+    if (!dragging && Math.abs(dy) > 4) {
+      dragging = true;
+      row.classList.add('dragging');
+    }
+    if (!dragging) return;
+
+    // Find which row the pointer is over
+    const rows = Array.from(document.querySelectorAll('#ing-rows .ing-row'));
+    let target = null;
+    let position = 'below';
+    for (const r of rows) {
+      if (r === row) continue;
+      const rect = r.getBoundingClientRect();
+      if (e.clientY >= rect.top && e.clientY <= rect.bottom) {
+        target = r;
+        position = (e.clientY < rect.top + rect.height / 2) ? 'above' : 'below';
+        break;
+      }
+    }
+    // Edge cases: above the first or below the last
+    if (!target && rows.length) {
+      const first = rows.find(r => r !== row);
+      const last = [...rows].reverse().find(r => r !== row);
+      if (first && e.clientY < first.getBoundingClientRect().top) {
+        target = first; position = 'above';
+      } else if (last && e.clientY > last.getBoundingClientRect().bottom) {
+        target = last; position = 'below';
+      }
+    }
+
+    clearTargets();
+    if (target) {
+      target.classList.add(position === 'above' ? 'drop-target-above' : 'drop-target-below');
+      lastTarget = { row: target, position };
+    } else {
+      lastTarget = null;
+    }
+  });
+
+  function endDrag(e) {
+    if (pointerId !== e.pointerId) return;
+    try { handle.releasePointerCapture(pointerId); } catch(_) {}
+    pointerId = null;
+    if (!dragging) { clearTargets(); return; }
+    dragging = false;
+    row.classList.remove('dragging');
+
+    if (lastTarget && lastTarget.row && lastTarget.row !== row) {
+      const wrap = document.getElementById('ing-rows');
+      if (lastTarget.position === 'above') {
+        wrap.insertBefore(row, lastTarget.row);
+      } else {
+        wrap.insertBefore(row, lastTarget.row.nextSibling);
+      }
+    }
+    clearTargets();
+    lastTarget = null;
+  }
+
+  handle.addEventListener('pointerup', endDrag);
+  handle.addEventListener('pointercancel', endDrag);
 }
 
 function calcPct() {
@@ -2055,14 +1416,14 @@ function renderRecipes() {
     return `<div class="card" onclick="openRecipeDetail('${r.id}')">
       <div class="card-header">
         <div class="card-icon">🍞</div>
-        <div style="flex:1">
+        <div style="flex:1;min-width:0">
           <div class="card-title">${r.name}</div>
           <div class="card-sub">${sub}</div>
           ${parent ? `<div style="font-size:10px;color:var(--accent2);margin-top:2px">↗ ${parent.name}</div>` : ''}
           ${childCount ? `<div style="font-size:10px;color:var(--ink3);margin-top:2px">변형 ${childCount}개</div>` : ''}
         </div>
-        <div class="card-meta">${(r.tags||[]).map(t=>`<span class="badge levain">${t}</span>`).join(' ')}</div>
       </div>
+      ${(r.tags||[]).length ? `<div class="card-tags">${(r.tags||[]).map(t=>`<span class="badge levain">${t}</span>`).join('')}</div>` : ''}
     </div>`;
   }).join('');
 }
@@ -2079,7 +1440,6 @@ function openLogForm(recipeId) {
   const sel = document.getElementById('l-recipe');
   sel.innerHTML = '<option value="">선택 안 함</option>' + state.recipes.map(r=>`<option value="${r.id}">${r.name}</option>`).join('');
   if (recipeId) sel.value = recipeId;
-  initLogKnowledgePicker([]);
   openSheet('sheet-log');
 }
 
@@ -2122,8 +1482,7 @@ function saveLog() {
     look: document.getElementById('l-look').value,
     crumb: document.getElementById('l-crumb').value,
     taste: document.getElementById('l-taste').value,
-    freshness: getFreshness(),
-    knowledgeIds: getSelectedLogKnowledgeIds()
+    freshness: getFreshness()
   };
   if (editId) {
     state.logs = state.logs.map(l => l.id === editId ? log : l);
@@ -2148,7 +1507,6 @@ function editLog(id) {
   const sel = document.getElementById('l-recipe');
   sel.innerHTML = '<option value="">선택 안 함</option>' + state.recipes.map(r=>`<option value="${r.id}">${r.name}</option>`).join('');
   if (l.recipeId) sel.value = l.recipeId;
-  initLogKnowledgePicker(l.knowledgeIds || []);
   openSheet('sheet-log');
 }
 
@@ -2174,7 +1532,7 @@ function renderLogs() {
         <div class="freshness-time">${f.time}</div>
         <div>${f.note}</div>
       </div>`).join('');
-    return `<div class="card" data-log-id="${l.id}">
+    return `<div class="card">
       <div class="card-header" style="cursor:default">
         <div class="card-icon">📋</div>
         <div style="flex:1">
@@ -2228,7 +1586,7 @@ function redrawNoteRefs() {
   if (!_noteRefs.length) { wrap.innerHTML = ''; return; }
   wrap.innerHTML = _noteRefs.map((r, i) => `
     <div class="ref-badge" style="margin-bottom:4px;display:flex;justify-content:space-between;align-items:center;width:100%;box-sizing:border-box">
-      <span>${r.type === 'recipe' ? '🍞' : r.type === 'knowledge' ? '📚' : '📋'} ${r.label}</span>
+      <span>${r.type === 'recipe' ? '🍞' : '📋'} ${r.label}</span>
       <button onclick="removeNoteRef(${i})" style="background:none;border:none;color:var(--ink3);cursor:pointer;font-size:14px;padding:0 0 0 8px">×</button>
     </div>`).join('');
 }
@@ -2243,52 +1601,24 @@ function removeNoteRef(idx) {
   redrawNoteRefs();
 }
 
-let _refPickerType = '';
-
 function openRefPicker(type) {
-  _refPickerType = type;
   const isRecipe = type === 'recipe';
-  const isKnowledge = type === 'knowledge';
-  document.getElementById('ref-picker-title').textContent =
-    isRecipe ? '레시피 선택' : isKnowledge ? '지식 선택' : '베이킹 기록 선택';
-  document.getElementById('ref-picker-search').value = '';
-  filterRefPicker();
-  openSheet('sheet-ref-picker');
-}
-
-function filterRefPicker() {
-  const type = _refPickerType;
-  const isRecipe = type === 'recipe';
-  const isKnowledge = type === 'knowledge';
-  const q = (document.getElementById('ref-picker-search')?.value || '').toLowerCase();
+  document.getElementById('ref-picker-title').textContent = isRecipe ? '레시피 선택' : '베이킹 기록 선택';
+  const items = isRecipe ? state.recipes : state.logs;
   const wrap = document.getElementById('ref-picker-list');
-
-  let items = isRecipe ? state.recipes : isKnowledge ? (state.knowledge || []) : state.logs;
-  if (q) {
-    items = items.filter(item => {
-      if (isKnowledge) return item.name.toLowerCase().includes(q) || (item.aliases||[]).some(a=>a.toLowerCase().includes(q)) || (item.summary||'').toLowerCase().includes(q);
-      if (isRecipe) return item.name.toLowerCase().includes(q);
-      const label = `${item.date||''}${item.recipeId ? (state.recipes.find(r=>r.id===item.recipeId)?.name||'') : ''}`;
-      return label.toLowerCase().includes(q);
-    });
-  }
-
   if (!items.length) {
-    wrap.innerHTML = `<div class="empty" style="padding:30px 20px">${q ? '검색 결과 없음' : isRecipe ? '레시피가 없어' : isKnowledge ? '지식이 없어' : '베이킹 기록이 없어'}</div>`;
-    return;
+    wrap.innerHTML = `<div class="empty" style="padding:30px 20px">${isRecipe ? '레시피가 없어' : '베이킹 기록이 없어'}</div>`;
+  } else {
+    wrap.innerHTML = items.map(item => {
+      const label = isRecipe ? item.name : `${fmt(item.date)}${item.recipeId ? ' · ' + (state.recipes.find(r=>r.id===item.recipeId)?.name||'') : ''}`;
+      return `<div onclick="selectRef('${type}','${item.id}',\`${label.replace(/`/g,"'")}\`)"
+        style="padding:12px 16px;border-bottom:1px solid var(--line);cursor:pointer;font-size:14px;display:flex;align-items:center;gap:10px">
+        <span style="font-size:18px">${isRecipe ? '🍞' : '📋'}</span>
+        <span>${label}</span>
+      </div>`;
+    }).join('');
   }
-  const icon = isRecipe ? '🍞' : isKnowledge ? '📚' : '📋';
-  wrap.innerHTML = items.map(item => {
-    const label = isRecipe ? item.name
-      : isKnowledge ? item.name
-      : `${fmt(item.date)}${item.recipeId ? ' · ' + (state.recipes.find(r=>r.id===item.recipeId)?.name||'') : ''}`;
-    const sub = isKnowledge ? `<div style="font-size:11px;color:var(--ink3);margin-top:2px">${item.summary||''}</div>` : '';
-    return `<div onclick="selectRef('${type}','${item.id}',\`${label.replace(/`/g,"'")}\`)"
-      style="padding:12px 16px;border-bottom:1px solid var(--line);cursor:pointer;font-size:14px;display:flex;align-items:center;gap:10px">
-      <span style="font-size:18px;flex-shrink:0">${icon}</span>
-      <div><span>${label}</span>${sub}</div>
-    </div>`;
-  }).join('');
+  openSheet('sheet-ref-picker');
 }
 
 function selectRef(type, id, label) {
@@ -2301,13 +1631,9 @@ function selectRef(type, id, label) {
 }
 
 function openLogDetail(logId) {
+  // jump to logs tab and highlight — simple: just switch tab
   const logsBtn = document.querySelector('nav button:nth-child(2)');
   showPage('logs', logsBtn);
-  // 해당 로그 카드로 스크롤
-  setTimeout(() => {
-    const el = document.querySelector(`[data-log-id="${logId}"]`);
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  }, 100);
 }
 
 function saveNote() {
@@ -2361,12 +1687,9 @@ function renderNotes() {
     const refsHtml = (n.refs||[]).map(r => {
       const clickFn = r.type === 'recipe'
         ? `openRecipeDetail('${r.id}')`
-        : r.type === 'knowledge'
-        ? `openKnowledgeDetail('${r.id}')`
         : `openLogDetail('${r.id}')`;
-      const icon = r.type === 'recipe' ? '🍞' : r.type === 'knowledge' ? '📚' : '📋';
       return `<div class="ref-badge" style="cursor:pointer;margin-bottom:4px;display:inline-flex;margin-right:4px" onclick="${clickFn}">
-        ${icon} ${r.label}
+        ${r.type === 'recipe' ? '🍞' : '📋'} ${r.label}
       </div>`;
     }).join('');
     return `<div class="card">
@@ -2512,7 +1835,15 @@ function renderQuickBtnEditorList() {
       <button class="ing-row-del" onclick="deleteQuickBtn('${b.id}')">×</button>
     </div>`).join('') +
   `<div style="margin-top:10px;display:flex;gap:8px;align-items:center">
-    <input class="form-input" id="new-qb-name" placeholder="새 재료 이름" style="flex:1"/>
+    <input class="form-input" id="new-qb-name" placeholder="새 재료 이름" style="flex:2;min-width:0"/>
+    <select class="form-select" id="new-qb-type" style="flex:1;width:auto;padding:8px 6px;font-size:12px;min-width:0">
+      <option value="flour">가루류</option>
+      <option value="liquid">액체류</option>
+      <option value="fat">유지류</option>
+      <option value="starter">발효종</option>
+      <option value="filling">필링</option>
+      <option value="other" selected>기타</option>
+    </select>
     <button class="btn-small" onclick="addQuickBtn()" style="white-space:nowrap">+ 추가</button>
   </div>`;
 }
@@ -2533,10 +1864,13 @@ function deleteQuickBtn(id) {
 function addQuickBtn() {
   const name = document.getElementById('new-qb-name').value.trim();
   if (!name) return;
+  const typeSel = document.getElementById('new-qb-type');
+  const type = (typeSel && typeSel.value) || 'other';
   const btns = getQuickBtns();
-  btns.push({ id: uid(), type: 'other', name });
+  btns.push({ id: uid(), type, name });
   state.quickIngBtns = btns;
   document.getElementById('new-qb-name').value = '';
+  if (typeSel) typeSel.value = 'other';
   save(); renderQuickBtnEditorList(); renderQuickIngBtns();
 }
 
@@ -2762,444 +2096,11 @@ function render() {
   renderLogs();
   renderNotes();
   renderLib();
-  renderKnowledge();
-}
-
-// ===== LOG KNOWLEDGE PICKER =====
-let _logKnowledgeIds = [];
-
-function initLogKnowledgePicker(ids) {
-  _logKnowledgeIds = [...(ids || [])];
-  document.getElementById('log-knowledge-search').value = '';
-  redrawLogKnowledgeSelected();
-  renderLogKnowledgePicker();
-}
-
-function redrawLogKnowledgeSelected() {
-  const wrap = document.getElementById('log-knowledge-selected');
-  const items = _logKnowledgeIds.map(id => {
-    const k = (state.knowledge || []).find(x => x.id === id);
-    if (!k) return '';
-    return `<span style="display:inline-flex;align-items:center;gap:4px;background:var(--accent);color:var(--white);border-radius:14px;padding:4px 10px;font-size:12px;font-family:'DM Mono',monospace">
-      ${k.name}
-      <button onclick="removeLogKnowledge('${id}')" style="background:none;border:none;color:var(--white);cursor:pointer;font-size:14px;line-height:1;padding:0 0 0 2px">×</button>
-    </span>`;
-  }).join('');
-  wrap.innerHTML = items || '<span style="font-size:12px;color:var(--ink3);font-family:\'DM Mono\',monospace">없음</span>';
-}
-
-function removeLogKnowledge(id) {
-  _logKnowledgeIds = _logKnowledgeIds.filter(x => x !== id);
-  redrawLogKnowledgeSelected();
-  renderLogKnowledgePicker();
-}
-
-function renderLogKnowledgePicker() {
-  const q = (document.getElementById('log-knowledge-search')?.value || '').toLowerCase();
-  const picker = document.getElementById('log-knowledge-picker');
-  if (!q) {
-    picker.innerHTML = '<span style="font-size:12px;color:var(--ink3)">기법 이름으로 검색해봐</span>';
-    return;
-  }
-  const items = (state.knowledge || []).filter(k =>
-    k.category === 'technique' &&
-    !_logKnowledgeIds.includes(k.id) &&
-    (k.name.toLowerCase().includes(q) || (k.aliases||[]).some(a=>a.toLowerCase().includes(q)))
-  );
-  if (!items.length) {
-    picker.innerHTML = '<span style="font-size:12px;color:var(--ink3)">검색 결과 없음</span>';
-    return;
-  }
-  picker.innerHTML = items.map(k =>
-    `<button type="button" class="chip" onclick="addLogKnowledge('${k.id}')">${k.name}</button>`
-  ).join('');
-}
-
-function addLogKnowledge(id) {
-  if (!_logKnowledgeIds.includes(id)) _logKnowledgeIds.push(id);
-  redrawLogKnowledgeSelected();
-  renderLogKnowledgePicker();
-}
-
-function getSelectedLogKnowledgeIds() {
-  return [..._logKnowledgeIds];
-}
-
-// ===== KNOWLEDGE =====
-function setKnowledgeFilter(btn) {
-  document.querySelectorAll('#knowledge-filters .chip').forEach(c => c.classList.remove('active'));
-  btn.classList.add('active');
-  renderKnowledge();
-}
-
-function renderKnowledge() {
-  const listEl = document.getElementById('knowledge-list');
-  if (!listEl) return;
-  const searchQ = (document.getElementById('knowledge-search')?.value || '').toLowerCase();
-  const activeCat = document.querySelector('#knowledge-filters .chip.active')?.dataset.cat || 'all';
-
-  let items = state.knowledge || [];
-
-  // 필터
-  if (activeCat !== 'all') items = items.filter(k => k.category === activeCat);
-  if (searchQ) items = items.filter(k =>
-    k.name.toLowerCase().includes(searchQ) ||
-    (k.aliases || []).some(a => a.toLowerCase().includes(searchQ)) ||
-    k.summary.toLowerCase().includes(searchQ)
-  );
-
-  // 카테고리별 그룹핑
-  const groups = {
-    technique:       { label: '기법', items: [] },
-    science:         { label: '발효·과학', items: [] },
-    troubleshooting: { label: '문제해결', items: [] }
-  };
-  items.forEach(k => { if (groups[k.category]) groups[k.category].items.push(k); });
-
-  let html = '';
-  Object.values(groups).forEach(g => {
-    if (!g.items.length) return;
-    html += `<div class="section-label">${g.label}</div>`;
-    html += g.items.map(k => {
-      const relCount = (k.related?.length || 0) + (k.relatedLib?.length || 0);
-      const logCount = (state.logs || []).filter(l => (l.knowledgeIds || []).includes(k.id)).length;
-      const hasNote = k.userNote && k.userNote.trim();
-      return `<div class="knowledge-card" onclick="openKnowledgeDetail('${k.id}')">
-        <h3>${k.name}${hasNote ? ' <span class="dot-note" title="내 메모 있음">•</span>' : ''}</h3>
-        <p class="summary">${k.summary}</p>
-        <div class="knowledge-meta">
-          ${relCount ? `<span>🔗 ${relCount}</span>` : ''}
-          ${logCount ? `<span>📝 ${logCount}회 사용</span>` : ''}
-          ${k.isEdited ? `<span class="edited-badge">수정됨</span>` : ''}
-          ${!k.isBuiltIn ? `<span class="custom-badge">내가 추가</span>` : ''}
-        </div>
-      </div>`;
-    }).join('');
-  });
-
-  document.getElementById('knowledge-count').textContent = `${(state.knowledge || []).length}개의 항목`;
-  listEl.innerHTML = html || `<div class="empty"><div class="empty-icon">📚</div>검색 결과가 없어</div>`;
-}
-
-// Phase 2에서 구현할 함수 (Phase 1 stub)
-function openKnowledgeDetail(id) {
-  const k = (state.knowledge || []).find(x => x.id === id);
-  if (!k) return;
-
-  // 현재 상세에서 열린 id 저장 (폼에서 돌아올 때 재렌더용)
-  window._kdCurrentId = id;
-
-  const catLabel = { technique: '기법', science: '발효·과학', troubleshooting: '문제해결' }[k.category] || k.category;
-
-  // 관련 항목 링크
-  const relatedLinks = (k.related || []).map(rid => {
-    const rel = (state.knowledge || []).find(x => x.id === rid);
-    if (!rel) return '';
-    return `<span class="related-link" onclick="openKnowledgeDetail('${rid}')">→ ${rel.name}</span>`;
-  }).join('');
-
-  // 관련 재료 링크
-  const relatedLibLinks = (k.relatedLib || []).map(lid => {
-    const item = (state.lib || []).find(x => x.id === lid);
-    if (!item) return '';
-    return `<span class="related-link" style="color:var(--ink2)">🌾 ${item.name}</span>`;
-  }).join('');
-
-  // 이 기법을 쓴 내 기록
-  const usedLogs = (state.logs || []).filter(l => (l.knowledgeIds || []).includes(k.id));
-  const logItems = usedLogs.map(l =>
-    `<div class="knowledge-card" style="margin-bottom:6px;padding:10px 14px" onclick="closeSheet('sheet-knowledge-detail');openLogDetail('${l.id}')">
-      <span style="font-size:13px;font-weight:600">${l.bread || '(이름 없음)'}</span>
-      <span style="font-size:11px;color:var(--ink3);font-family:'DM Mono',monospace;margin-left:8px">${l.date || ''}</span>
-    </div>`
-  ).join('');
-
-  // 내 메모 블록
-  const noteBlock = k.userNote && k.userNote.trim()
-    ? `<div class="user-note-block">${k.userNote}</div>`
-    : `<span class="user-note-empty">아직 메모가 없어. 수정 버튼으로 추가할 수 있어.</span>`;
-
-  // 기본값 복원 버튼 (isBuiltIn이고 수정된 경우만)
-  const restoreBtn = (k.isBuiltIn && k.isEdited)
-    ? `<button class="btn btn-secondary" style="width:100%;margin-top:8px" onclick="restoreKnowledge('${k.id}')">🔄 기본값 복원</button>`
-    : '';
-
-  // 삭제 버튼 (커스텀 항목만)
-  const deleteBtn = !k.isBuiltIn
-    ? `<button class="btn btn-secondary" style="width:100%;margin-top:8px;color:var(--red);border-color:var(--red)" onclick="deleteKnowledge('${k.id}')">🗑 삭제</button>`
-    : '';
-
-  document.getElementById('kd-title').textContent = k.name;
-  document.getElementById('kd-body').innerHTML = `
-    <div style="margin-bottom:16px">
-      <span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--accent);background:var(--bg2);padding:3px 10px;border-radius:10px">${catLabel}</span>
-      ${k.isEdited ? '<span class="edited-badge" style="margin-left:6px">수정됨</span>' : ''}
-      ${!k.isBuiltIn ? '<span class="custom-badge" style="margin-left:6px">내가 추가</span>' : ''}
-    </div>
-
-    <div class="knowledge-detail-section" style="margin-top:0;padding-top:0;border-top:none">
-      <h4>📖 설명</h4>
-      <div class="knowledge-content">${k.content || ''}</div>
-    </div>
-
-    <div class="knowledge-detail-section">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-        <h4 style="margin:0">✍️ 내 메모</h4>
-      </div>
-      ${noteBlock}
-    </div>
-
-    ${(relatedLinks || relatedLibLinks) ? `
-    <div class="knowledge-detail-section">
-      <h4>🔗 관련 항목</h4>
-      <div style="line-height:2">${relatedLinks}</div>
-      ${relatedLibLinks ? `<div style="margin-top:8px;line-height:2">${relatedLibLinks}</div>` : ''}
-    </div>` : ''}
-
-    ${usedLogs.length ? `
-    <div class="knowledge-detail-section">
-      <h4>📝 이 기법을 쓴 내 기록</h4>
-      ${logItems}
-    </div>` : ''}
-
-    ${restoreBtn}
-    ${deleteBtn}
-  `;
-
-  openSheet('sheet-knowledge-detail');
-}
-
-let _kdDetailId = null; // 상세 sheet에서 열린 id (폼 닫힐 때 재렌더용)
-
-function openKnowledgeFormFromDetail() {
-  openKnowledgeForm(window._kdCurrentId);
-}
-
-function openKnowledgeForm(id) {
-  _kdDetailId = id || null;
-  document.getElementById('kf-edit-id').value = id || '';
-  document.getElementById('kf-title').textContent = id ? '지식 수정' : '지식 추가';
-
-  if (id) {
-    const k = (state.knowledge || []).find(x => x.id === id);
-    if (!k) return;
-    document.getElementById('kf-cat').value = k.category || 'technique';
-    document.getElementById('kf-name').value = k.name || '';
-    document.getElementById('kf-aliases').value = (k.aliases || []).join(', ');
-    document.getElementById('kf-summary').value = k.summary || '';
-    document.getElementById('kf-content').value = k.content || '';
-    document.getElementById('kf-user-note').value = k.userNote || '';
-    renderKfRelated(k.related || [], k.relatedLib || []);
-  } else {
-    document.getElementById('kf-cat').value = 'technique';
-    document.getElementById('kf-name').value = '';
-    document.getElementById('kf-aliases').value = '';
-    document.getElementById('kf-summary').value = '';
-    document.getElementById('kf-content').value = '';
-    document.getElementById('kf-user-note').value = '';
-    renderKfRelated([], []);
-  }
-
-  openSheet('sheet-knowledge-form');
-}
-
-let _kfRelatedIds = [];
-let _kfRelatedLibIds = [];
-
-function renderKfRelated(selectedIds, selectedLibIds) {
-  _kfRelatedIds = [...(selectedIds || [])];
-  _kfRelatedLibIds = [...(selectedLibIds || [])];
-  document.getElementById('kf-related-search').value = '';
-  document.getElementById('kf-lib-search').value = '';
-  redrawKfRelatedSelected();
-  redrawKfLibSelected();
-  renderKfRelatedPicker();
-  renderKfLibPicker();
-}
-
-function redrawKfRelatedSelected() {
-  const wrap = document.getElementById('kf-related-selected');
-  const editId = document.getElementById('kf-edit-id').value;
-  const items = _kfRelatedIds.map(id => {
-    const k = (state.knowledge || []).find(x => x.id === id);
-    if (!k) return '';
-    return `<span style="display:inline-flex;align-items:center;gap:4px;background:var(--accent);color:var(--white);border-radius:14px;padding:4px 10px;font-size:12px;font-family:'DM Mono',monospace">
-      ${k.name}
-      <button onclick="removeKfRelated('${id}')" style="background:none;border:none;color:var(--white);cursor:pointer;font-size:14px;line-height:1;padding:0 0 0 2px">×</button>
-    </span>`;
-  }).join('');
-  wrap.innerHTML = items || '<span style="font-size:12px;color:var(--ink3);font-family:\'DM Mono\',monospace">없음</span>';
-}
-
-function redrawKfLibSelected() {
-  const wrap = document.getElementById('kf-related-lib-selected');
-  const items = _kfRelatedLibIds.map(id => {
-    const item = (state.lib || []).find(x => x.id === id);
-    if (!item) return '';
-    return `<span style="display:inline-flex;align-items:center;gap:4px;background:var(--accent);color:var(--white);border-radius:14px;padding:4px 10px;font-size:12px;font-family:'DM Mono',monospace">
-      ${item.name}
-      <button onclick="removeKfLib('${id}')" style="background:none;border:none;color:var(--white);cursor:pointer;font-size:14px;line-height:1;padding:0 0 0 2px">×</button>
-    </span>`;
-  }).join('');
-  wrap.innerHTML = items || '<span style="font-size:12px;color:var(--ink3);font-family:\'DM Mono\',monospace">없음</span>';
-}
-
-function renderKfRelatedPicker() {
-  const editId = document.getElementById('kf-edit-id').value;
-  const q = (document.getElementById('kf-related-search')?.value || '').toLowerCase();
-  const picker = document.getElementById('kf-related-list');
-  let items = (state.knowledge || []).filter(k =>
-    k.id !== editId &&
-    !_kfRelatedIds.includes(k.id) &&
-    (q === '' || k.name.toLowerCase().includes(q) || (k.aliases||[]).some(a=>a.toLowerCase().includes(q)))
-  );
-  if (!q) items = []; // 검색어 없으면 아무것도 안 보여줌
-  if (!items.length) {
-    picker.innerHTML = q ? '<span style="font-size:12px;color:var(--ink3)">검색 결과 없음</span>' : '<span style="font-size:12px;color:var(--ink3)">이름 또는 별칭으로 검색해봐</span>';
-    return;
-  }
-  picker.innerHTML = items.map(k =>
-    `<button type="button" class="chip" onclick="addKfRelated('${k.id}')">${k.name}</button>`
-  ).join('');
-}
-
-function renderKfLibPicker() {
-  const q = (document.getElementById('kf-lib-search')?.value || '').toLowerCase();
-  const picker = document.getElementById('kf-related-lib-list');
-  let items = (state.lib || []).filter(item =>
-    !_kfRelatedLibIds.includes(item.id) &&
-    (q === '' || item.name.toLowerCase().includes(q))
-  );
-  if (!q) items = [];
-  if (!state.lib || !state.lib.length) {
-    picker.innerHTML = '<span style="font-size:12px;color:var(--ink3)">재료창고가 비어있어</span>';
-    return;
-  }
-  if (!items.length) {
-    picker.innerHTML = q ? '<span style="font-size:12px;color:var(--ink3)">검색 결과 없음</span>' : '<span style="font-size:12px;color:var(--ink3)">재료 이름으로 검색해봐</span>';
-    return;
-  }
-  picker.innerHTML = items.map(item =>
-    `<button type="button" class="chip" onclick="addKfLib('${item.id}')">${item.name}</button>`
-  ).join('');
-}
-
-function addKfRelated(id) {
-  if (!_kfRelatedIds.includes(id)) _kfRelatedIds.push(id);
-  redrawKfRelatedSelected();
-  renderKfRelatedPicker();
-}
-
-function removeKfRelated(id) {
-  _kfRelatedIds = _kfRelatedIds.filter(x => x !== id);
-  redrawKfRelatedSelected();
-  renderKfRelatedPicker();
-}
-
-function addKfLib(id) {
-  if (!_kfRelatedLibIds.includes(id)) _kfRelatedLibIds.push(id);
-  redrawKfLibSelected();
-  renderKfLibPicker();
-}
-
-function removeKfLib(id) {
-  _kfRelatedLibIds = _kfRelatedLibIds.filter(x => x !== id);
-  redrawKfLibSelected();
-  renderKfLibPicker();
-}
-
-function saveKnowledge() {
-  const name = document.getElementById('kf-name').value.trim();
-  if (!name) { toast('이름을 입력해주세요'); return; }
-  const editId = document.getElementById('kf-edit-id').value;
-
-  const aliasesRaw = document.getElementById('kf-aliases').value;
-  const aliases = aliasesRaw.split(',').map(s => s.trim()).filter(Boolean);
-
-  const related = [..._kfRelatedIds];
-  const relatedLib = [..._kfRelatedLibIds];
-
-  const patch = {
-    category: document.getElementById('kf-cat').value,
-    name,
-    aliases,
-    summary: document.getElementById('kf-summary').value.trim(),
-    content: document.getElementById('kf-content').value,
-    related,
-    relatedLib,
-    userNote: document.getElementById('kf-user-note').value,
-  };
-
-  if (editId) {
-    const existing = (state.knowledge || []).find(x => x.id === editId);
-    const updated = { ...existing, ...patch };
-    if (existing.isBuiltIn) updated.isEdited = true;
-    state.knowledge = state.knowledge.map(x => x.id === editId ? updated : x);
-    toast('수정됐어!');
-  } else {
-    const newItem = {
-      ...patch,
-      id: 'custom-' + uid(),
-      isBuiltIn: false,
-      isEdited: false,
-      userExamples: [],
-      createdAt: today()
-    };
-    state.knowledge = [newItem, ...(state.knowledge || [])];
-    toast('추가됐어!');
-  }
-
-  save();
-  if (typeof fsSet === 'function' && editId) {
-    const saved = state.knowledge.find(x => x.id === editId);
-    if (saved) fsSet('knowledge', saved);
-  }
-  closeSheet('sheet-knowledge-form');
-  renderKnowledge();
-
-  // 상세 sheet가 열려있으면 재렌더
-  if (editId && _kdDetailId === editId) {
-    openKnowledgeDetail(editId);
-  }
-}
-
-function restoreKnowledge(id) {
-  const original = KNOWLEDGE_SEED.find(k => k.id === id);
-  if (!original) return;
-  if (!confirm('이 항목을 기본값으로 되돌릴까? 수정한 내용과 내 메모가 사라져.')) return;
-  const idx = (state.knowledge || []).findIndex(k => k.id === id);
-  if (idx < 0) return;
-  state.knowledge[idx] = JSON.parse(JSON.stringify(original));
-  save();
-  renderKnowledge();
-  openKnowledgeDetail(id);
-  toast('기본값으로 복원됐어');
-}
-
-async function deleteKnowledge(id) {
-  const k = (state.knowledge || []).find(x => x.id === id);
-  if (!k) return;
-  if (k.isBuiltIn) { toast('기본 항목은 삭제할 수 없어. 기본값 복원을 사용해.'); return; }
-  if (!confirm(`"${k.name}"을 삭제할까?`)) return;
-  state.knowledge = state.knowledge.filter(x => x.id !== id);
-  save();
-  closeSheet('sheet-knowledge-detail');
-  renderKnowledge();
-  toast('삭제됐어');
 }
 
 // ===== JSON BACKUP =====
 function exportJSON() {
-  const data = JSON.stringify({
-    recipes: state.recipes,
-    logs: state.logs,
-    notes: state.notes,
-    lib: state.lib,
-    knowledge: state.knowledge,
-    categories: state.categories,
-    tagPool: state.tagPool,
-    quickIngBtns: state.quickIngBtns,
-  }, null, 2);
+  const data = JSON.stringify(state, null, 2);
   const blob = new Blob([data], {type: 'application/json'});
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
@@ -3217,10 +2118,6 @@ function importJSON(e) {
       if (!imported.recipes) { toast('올바른 파일이 아니야'); return; }
       if (!confirm('현재 데이터를 덮어쓸까요?')) return;
       Object.assign(state, imported);
-      // knowledge가 없거나 비어있으면 시드 주입
-      if (!state.knowledge || state.knowledge.length === 0) {
-        state.knowledge = JSON.parse(JSON.stringify(KNOWLEDGE_SEED));
-      }
       save();
       render();
       toast('불러왔어!');
@@ -3287,7 +2184,7 @@ function updateAuthUI(user) {
 }
 
 // Firestore 컬렉션 목록
-const FS_COLLECTIONS = ['recipes','logs','notes','lib','knowledge'];
+const FS_COLLECTIONS = ['recipes','logs','notes','lib'];
 const FS_SETTINGS_DOC = 'settings'; // categories, tagPool, quickIngBtns
 
 function startFirestoreSync(uid) {
@@ -3314,21 +2211,7 @@ function startFirestoreSync(uid) {
       fb.orderBy('createdAt', 'desc')
     );
     const u = fb.onSnapshot(q, snap => {
-      const docs = snap.docs.map(d => ({ ...d.data(), id: d.id }));
-      if (col === 'knowledge') {
-        // Firestore에 저장된 것만 덮어씀. 없는 시드 항목은 로컬 상태 유지
-        if (docs.length > 0) {
-          const fsIds = new Set(docs.map(d => d.id));
-          const localOnly = (state.knowledge || []).filter(k => !fsIds.has(k.id));
-          state.knowledge = [...docs, ...localOnly];
-        }
-        // docs가 비어있으면(첫 로그인) 로컬 시드 그대로 두고 Firestore에 업로드
-        if (docs.length === 0 && state.knowledge && state.knowledge.length > 0) {
-          state.knowledge.forEach(k => fsSet('knowledge', k));
-        }
-      } else {
-        state[col] = docs;
-      }
+      state[col] = snap.docs.map(d => ({ ...d.data(), id: d.id }));
       save();
       render();
       syncDot('#4CAF50');
