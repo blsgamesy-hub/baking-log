@@ -283,6 +283,91 @@
     margin-bottom: 10px;
   }
 
+  /* PHOTOS */
+  .photo-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    margin-bottom: 8px;
+  }
+  .photo-grid.detail {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .photo-thumb {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--bg2);
+    cursor: pointer;
+  }
+  .photo-thumb img {
+    width: 100%; height: 100%; object-fit: cover; display: block;
+  }
+  .photo-thumb-del {
+    position: absolute; top: 4px; right: 4px;
+    width: 22px; height: 22px; border-radius: 50%;
+    background: rgba(0,0,0,0.55); color: white; border: none;
+    font-size: 14px; line-height: 1; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .photo-add-btn {
+    aspect-ratio: 1 / 1;
+    border: 1.5px dashed var(--line);
+    border-radius: 8px;
+    background: var(--bg2);
+    color: var(--ink3);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    cursor: pointer; font-size: 11px; gap: 2px;
+    font-family: 'DM Mono', monospace;
+  }
+  .photo-add-btn:active { background: var(--bg); }
+  .photo-add-icon { font-size: 22px; line-height: 1; }
+  .photo-loading {
+    aspect-ratio: 1 / 1;
+    border-radius: 8px;
+    background: var(--bg2);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--ink3); font-size: 11px;
+    font-family: 'DM Mono', monospace;
+  }
+
+  /* LIGHTBOX */
+  .lightbox {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.92);
+    z-index: 9999;
+    display: none;
+    align-items: center; justify-content: center;
+    touch-action: none;
+  }
+  .lightbox.show { display: flex; }
+  .lightbox img {
+    max-width: 100%; max-height: 100%;
+    object-fit: contain;
+  }
+  .lightbox-close {
+    position: absolute; top: 16px; right: 16px;
+    width: 40px; height: 40px; border-radius: 50%;
+    background: rgba(255,255,255,0.15); color: white;
+    border: none; font-size: 20px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .lightbox-nav {
+    position: absolute; top: 50%; transform: translateY(-50%);
+    width: 44px; height: 44px; border-radius: 50%;
+    background: rgba(255,255,255,0.15); color: white;
+    border: none; font-size: 22px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .lightbox-nav.prev { left: 12px; }
+  .lightbox-nav.next { right: 12px; }
+  .lightbox-counter {
+    position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
+    color: white; font-size: 12px; font-family: 'DM Mono', monospace;
+    background: rgba(0,0,0,0.4); padding: 4px 12px; border-radius: 12px;
+  }
+
   /* BTN */
   .btn {
     padding: 11px 20px; border-radius: 8px; border: none; cursor: pointer;
@@ -580,6 +665,15 @@ window.dispatchEvent(new Event('firebase-ready'));
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
+  <button class="lightbox-close" onclick="closeLightbox(event,true)">✕</button>
+  <button class="lightbox-nav prev" onclick="lightboxNav(-1,event)">‹</button>
+  <img id="lightbox-img" alt=""/>
+  <button class="lightbox-nav next" onclick="lightboxNav(1,event)">›</button>
+  <div class="lightbox-counter" id="lightbox-counter"></div>
+</div>
+
 <!-- ===== SHEETS ===== -->
 
 <!-- RECIPE FORM SHEET -->
@@ -724,6 +818,11 @@ window.dispatchEvent(new Event('firebase-ready'));
         <label class="form-label">맛 & 총평</label>
         <textarea class="form-textarea" id="l-taste" style="min-height:60px" placeholder="신맛 적절, 다음엔 발효 좀 더..."></textarea>
       </div>
+
+      <div class="section-label">사진</div>
+      <div id="log-photo-grid" class="photo-grid"></div>
+      <input type="file" id="log-photo-input" accept="image/*" multiple style="display:none" onchange="handleLogPhotoSelect(event)"/>
+      <div style="font-size:11px;color:var(--ink3);font-family:'DM Mono',monospace">최대 6장 · 자동으로 압축돼 저장돼</div>
 
       <div class="section-label">신선도 기록</div>
       <div id="freshness-rows"></div>
@@ -900,6 +999,363 @@ function fmt(d) {
   if (!d) return '';
   const [y,m,day] = d.split('-');
   return `${y}. ${m}. ${day}`;
+}
+
+// ===== PHOTOS (IndexedDB) =====
+const PHOTO_DB_NAME = 'bread-log-photos';
+const PHOTO_DB_VERSION = 1;
+const PHOTO_STORE = 'photos';
+const MAX_PHOTOS_PER_LOG = 6;
+const PHOTO_MAX_DIM = 1600;
+const THUMB_MAX_DIM = 400;
+const PHOTO_QUALITY = 0.85;
+const THUMB_QUALITY = 0.75;
+
+let _photoDB = null;
+function openPhotoDB() {
+  if (_photoDB) return Promise.resolve(_photoDB);
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(PHOTO_DB_NAME, PHOTO_DB_VERSION);
+    req.onupgradeneeded = (e) => {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains(PHOTO_STORE)) {
+        const store = db.createObjectStore(PHOTO_STORE, { keyPath: 'id' });
+        store.createIndex('logId', 'logId', { unique: false });
+      }
+    };
+    req.onsuccess = () => { _photoDB = req.result; resolve(_photoDB); };
+    req.onerror = () => reject(req.error);
+  });
+}
+
+async function photoDBPut(record) {
+  const db = await openPhotoDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(PHOTO_STORE, 'readwrite');
+    tx.objectStore(PHOTO_STORE).put(record);
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+}
+async function photoDBGet(id) {
+  const db = await openPhotoDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(PHOTO_STORE, 'readonly');
+    const req = tx.objectStore(PHOTO_STORE).get(id);
+    req.onsuccess = () => resolve(req.result || null);
+    req.onerror = () => reject(req.error);
+  });
+}
+async function photoDBGetByLog(logId) {
+  const db = await openPhotoDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(PHOTO_STORE, 'readonly');
+    const idx = tx.objectStore(PHOTO_STORE).index('logId');
+    const req = idx.getAll(logId);
+    req.onsuccess = () => resolve((req.result || []).sort((a,b) => (a.order||0) - (b.order||0)));
+    req.onerror = () => reject(req.error);
+  });
+}
+async function photoDBDelete(id) {
+  const db = await openPhotoDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(PHOTO_STORE, 'readwrite');
+    tx.objectStore(PHOTO_STORE).delete(id);
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+}
+async function photoDBDeleteByLog(logId) {
+  const photos = await photoDBGetByLog(logId);
+  await Promise.all(photos.map(p => photoDBDelete(p.id)));
+}
+async function photoDBGetAll() {
+  const db = await openPhotoDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(PHOTO_STORE, 'readonly');
+    const req = tx.objectStore(PHOTO_STORE).getAll();
+    req.onsuccess = () => resolve(req.result || []);
+    req.onerror = () => reject(req.error);
+  });
+}
+async function photoDBClear() {
+  const db = await openPhotoDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(PHOTO_STORE, 'readwrite');
+    tx.objectStore(PHOTO_STORE).clear();
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
+// Compress an image File/Blob to a JPEG Blob at given max dimension
+function compressImage(fileOrBlob, maxDim, quality) {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(fileOrBlob);
+    const img = new Image();
+    img.onload = () => {
+      try {
+        let { width, height } = img;
+        const longest = Math.max(width, height);
+        if (longest > maxDim) {
+          const scale = maxDim / longest;
+          width = Math.round(width * scale);
+          height = Math.round(height * scale);
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        canvas.toBlob(blob => {
+          URL.revokeObjectURL(url);
+          if (!blob) return reject(new Error('compression failed'));
+          resolve(blob);
+        }, 'image/jpeg', quality);
+      } catch (err) { URL.revokeObjectURL(url); reject(err); }
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('image load failed')); };
+    img.src = url;
+  });
+}
+
+// Convert a Blob to a temporary object-URL we can use in <img src=...>
+const _blobUrlCache = new Map(); // photoId -> {full, thumb}
+function blobToUrl(blob) {
+  return URL.createObjectURL(blob);
+}
+function getCachedUrls(photoId) {
+  return _blobUrlCache.get(photoId);
+}
+function cacheUrls(photoId, full, thumb) {
+  // revoke any previous
+  const prev = _blobUrlCache.get(photoId);
+  if (prev) {
+    if (prev.full) URL.revokeObjectURL(prev.full);
+    if (prev.thumb) URL.revokeObjectURL(prev.thumb);
+  }
+  _blobUrlCache.set(photoId, { full, thumb });
+}
+function revokeAllPhotoUrls() {
+  for (const { full, thumb } of _blobUrlCache.values()) {
+    if (full) URL.revokeObjectURL(full);
+    if (thumb) URL.revokeObjectURL(thumb);
+  }
+  _blobUrlCache.clear();
+}
+
+// Read a file as base64 data URL
+function blobToDataURL(blob) {
+  return new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => resolve(r.result);
+    r.onerror = () => reject(r.error);
+    r.readAsDataURL(blob);
+  });
+}
+async function dataURLToBlob(dataUrl) {
+  const res = await fetch(dataUrl);
+  return await res.blob();
+}
+
+// ===== LOG PHOTO UI =====
+// _logPhotos holds the in-progress photo list for the open log form:
+// each item: { id, logId, blob, thumbBlob, order, createdAt, _isNew?: bool, _toDelete?: bool }
+let _logPhotos = [];
+let _logPhotosTouched = false;
+
+async function loadLogPhotosForForm(logId) {
+  if (!logId) { _logPhotos = []; renderLogPhotoGrid(); return; }
+  const photos = await photoDBGetByLog(logId);
+  _logPhotos = photos.map(p => ({ ...p }));
+  renderLogPhotoGrid();
+}
+
+function renderLogPhotoGrid() {
+  const grid = document.getElementById('log-photo-grid');
+  if (!grid) return;
+  const visible = _logPhotos.filter(p => !p._toDelete);
+  let html = visible.map((p, i) => {
+    const cached = getCachedUrls(p.id);
+    let thumbUrl = cached?.thumb;
+    if (!thumbUrl && p.thumbBlob) {
+      thumbUrl = blobToUrl(p.thumbBlob);
+      cacheUrls(p.id, cached?.full, thumbUrl);
+    }
+    return `<div class="photo-thumb" onclick="openLightboxFromForm(${i})">
+      ${thumbUrl ? `<img src="${thumbUrl}" alt=""/>` : ''}
+      <button class="photo-thumb-del" onclick="event.stopPropagation();removeLogPhoto('${p.id}')">×</button>
+    </div>`;
+  }).join('');
+  if (visible.length < MAX_PHOTOS_PER_LOG) {
+    html += `<div class="photo-add-btn" onclick="document.getElementById('log-photo-input').click()">
+      <div class="photo-add-icon">＋</div>
+      <div>사진 추가</div>
+    </div>`;
+  }
+  grid.innerHTML = html;
+}
+
+async function handleLogPhotoSelect(event) {
+  const files = Array.from(event.target.files || []);
+  event.target.value = '';
+  if (!files.length) return;
+  const visibleCount = _logPhotos.filter(p => !p._toDelete).length;
+  const remaining = MAX_PHOTOS_PER_LOG - visibleCount;
+  if (remaining <= 0) { toast(`최대 ${MAX_PHOTOS_PER_LOG}장까지만 가능해`); return; }
+  const toProcess = files.slice(0, remaining);
+  if (files.length > remaining) toast(`${remaining}장만 추가됐어`);
+  _logPhotosTouched = true;
+
+  // Show placeholders while processing
+  const placeholderIds = toProcess.map(() => 'tmp-' + uid());
+  toProcess.forEach((f, i) => {
+    _logPhotos.push({
+      id: placeholderIds[i],
+      _processing: true,
+      order: _logPhotos.length
+    });
+  });
+  renderProcessingGrid();
+
+  for (let i = 0; i < toProcess.length; i++) {
+    const file = toProcess[i];
+    try {
+      const fullBlob = await compressImage(file, PHOTO_MAX_DIM, PHOTO_QUALITY);
+      const thumbBlob = await compressImage(file, THUMB_MAX_DIM, THUMB_QUALITY);
+      const idx = _logPhotos.findIndex(p => p.id === placeholderIds[i]);
+      if (idx >= 0) {
+        _logPhotos[idx] = {
+          id: 'photo-' + uid(),
+          logId: null, // filled at saveLog time
+          blob: fullBlob,
+          thumbBlob: thumbBlob,
+          order: _logPhotos[idx].order,
+          createdAt: today(),
+          _isNew: true
+        };
+      }
+    } catch (err) {
+      console.error('photo compress error', err);
+      _logPhotos = _logPhotos.filter(p => p.id !== placeholderIds[i]);
+      toast('사진 처리 실패');
+    }
+  }
+  renderLogPhotoGrid();
+}
+
+function renderProcessingGrid() {
+  const grid = document.getElementById('log-photo-grid');
+  if (!grid) return;
+  const visible = _logPhotos.filter(p => !p._toDelete);
+  let html = visible.map(p => {
+    if (p._processing) {
+      return `<div class="photo-loading">처리중…</div>`;
+    }
+    const cached = getCachedUrls(p.id);
+    let thumbUrl = cached?.thumb;
+    if (!thumbUrl && p.thumbBlob) {
+      thumbUrl = blobToUrl(p.thumbBlob);
+      cacheUrls(p.id, cached?.full, thumbUrl);
+    }
+    return `<div class="photo-thumb">
+      ${thumbUrl ? `<img src="${thumbUrl}" alt=""/>` : ''}
+    </div>`;
+  }).join('');
+  grid.innerHTML = html;
+}
+
+function removeLogPhoto(photoId) {
+  const p = _logPhotos.find(x => x.id === photoId);
+  if (!p) return;
+  _logPhotosTouched = true;
+  if (p._isNew) {
+    // hadn't been saved yet; just drop
+    _logPhotos = _logPhotos.filter(x => x.id !== photoId);
+  } else {
+    p._toDelete = true;
+  }
+  renderLogPhotoGrid();
+}
+
+async function persistLogPhotos(logId) {
+  // Apply pending changes for the open log form
+  for (const p of _logPhotos) {
+    if (p._toDelete && !p._isNew) {
+      await photoDBDelete(p.id);
+    } else if (p._isNew) {
+      await photoDBPut({
+        id: p.id,
+        logId,
+        blob: p.blob,
+        thumbBlob: p.thumbBlob,
+        order: p.order,
+        createdAt: p.createdAt
+      });
+    }
+  }
+}
+
+// Returns the photo IDs that belong to this log, in display order, after pending changes applied
+function pendingLogPhotoIds() {
+  return _logPhotos.filter(p => !p._toDelete).map(p => p.id);
+}
+
+// ===== LIGHTBOX =====
+let _lightbox = { photos: [], idx: 0 };
+
+async function openLightboxFromForm(idx) {
+  const visible = _logPhotos.filter(p => !p._toDelete);
+  await openLightboxWithPhotos(visible, idx);
+}
+
+async function openLightboxForLog(logId, idx = 0) {
+  const photos = await photoDBGetByLog(logId);
+  await openLightboxWithPhotos(photos, idx);
+}
+
+async function openLightboxWithPhotos(photos, idx) {
+  if (!photos.length) return;
+  _lightbox.photos = photos;
+  _lightbox.idx = Math.max(0, Math.min(idx, photos.length - 1));
+  await showLightboxImg();
+  document.getElementById('lightbox').classList.add('show');
+}
+
+async function showLightboxImg() {
+  const p = _lightbox.photos[_lightbox.idx];
+  if (!p) return;
+  const cached = getCachedUrls(p.id);
+  let fullUrl = cached?.full;
+  if (!fullUrl && p.blob) {
+    fullUrl = blobToUrl(p.blob);
+    cacheUrls(p.id, fullUrl, cached?.thumb);
+  }
+  const img = document.getElementById('lightbox-img');
+  img.src = fullUrl || '';
+  document.getElementById('lightbox-counter').textContent =
+    `${_lightbox.idx + 1} / ${_lightbox.photos.length}`;
+  // hide nav arrows when only 1 photo
+  const showNav = _lightbox.photos.length > 1;
+  document.querySelectorAll('.lightbox-nav').forEach(b =>
+    b.style.display = showNav ? 'flex' : 'none');
+}
+
+function lightboxNav(dir, e) {
+  if (e) e.stopPropagation();
+  if (!_lightbox.photos.length) return;
+  const n = _lightbox.photos.length;
+  _lightbox.idx = (_lightbox.idx + dir + n) % n;
+  showLightboxImg();
+}
+
+function closeLightbox(e, force) {
+  // close only when clicking the backdrop or close button
+  if (!force && e && e.target && e.target.id !== 'lightbox') return;
+  document.getElementById('lightbox').classList.remove('show');
+  const img = document.getElementById('lightbox-img');
+  if (img) img.src = '';
+  _lightbox = { photos: [], idx: 0 };
 }
 
 // ===== NAV =====
@@ -1440,6 +1896,9 @@ function openLogForm(recipeId) {
   const sel = document.getElementById('l-recipe');
   sel.innerHTML = '<option value="">선택 안 함</option>' + state.recipes.map(r=>`<option value="${r.id}">${r.name}</option>`).join('');
   if (recipeId) sel.value = recipeId;
+  _logPhotos = [];
+  _logPhotosTouched = false;
+  renderLogPhotoGrid();
   openSheet('sheet-log');
 }
 
@@ -1470,10 +1929,20 @@ function getFreshness() {
   }));
 }
 
-function saveLog() {
+async function saveLog() {
   const date = document.getElementById('l-date').value;
   if (!date) { toast('날짜를 선택해주세요'); return; }
   const editId = document.getElementById('log-edit-id').value;
+  // Determine photoIds: if user touched photos in this session use the pending list,
+  // otherwise preserve existing log.photoIds (e.g. logs synced from another device
+  // whose photo blobs aren't in this device's IndexedDB).
+  let resolvedPhotoIds;
+  if (editId && !_logPhotosTouched) {
+    const existing = state.logs.find(l => l.id === editId);
+    resolvedPhotoIds = (existing && Array.isArray(existing.photoIds)) ? existing.photoIds : pendingLogPhotoIds();
+  } else {
+    resolvedPhotoIds = pendingLogPhotoIds();
+  }
   const log = {
     id: editId || uid(),
     date,
@@ -1482,8 +1951,19 @@ function saveLog() {
     look: document.getElementById('l-look').value,
     crumb: document.getElementById('l-crumb').value,
     taste: document.getElementById('l-taste').value,
-    freshness: getFreshness()
+    freshness: getFreshness(),
+    photoIds: resolvedPhotoIds
   };
+  // Persist photos to IndexedDB tied to log.id
+  try {
+    if (_logPhotosTouched || !editId) {
+      await persistLogPhotos(log.id);
+    }
+  } catch (err) {
+    console.error('photo persist error', err);
+    toast('사진 저장 실패');
+    return;
+  }
   if (editId) {
     state.logs = state.logs.map(l => l.id === editId ? log : l);
   } else {
@@ -1493,7 +1973,7 @@ function saveLog() {
   toast('기록됐어!');
 }
 
-function editLog(id) {
+async function editLog(id) {
   const l = state.logs.find(x => x.id === id);
   if (!l) return;
   document.getElementById('log-edit-id').value = id;
@@ -1507,7 +1987,12 @@ function editLog(id) {
   const sel = document.getElementById('l-recipe');
   sel.innerHTML = '<option value="">선택 안 함</option>' + state.recipes.map(r=>`<option value="${r.id}">${r.name}</option>`).join('');
   if (l.recipeId) sel.value = l.recipeId;
+  _logPhotos = [];
+  _logPhotosTouched = false;
+  renderLogPhotoGrid();
   openSheet('sheet-log');
+  // load photos asynchronously
+  await loadLogPhotosForForm(id);
 }
 
 async function deleteLog(id) {
@@ -1515,6 +2000,7 @@ async function deleteLog(id) {
   state.logs = state.logs.filter(l => l.id !== id);
   save(); renderLogs();
   await fsDel('logs', id);
+  try { await photoDBDeleteByLog(id); } catch(e) { console.error(e); }
   toast('삭제됐어');
 }
 
@@ -1532,6 +2018,7 @@ function renderLogs() {
         <div class="freshness-time">${f.time}</div>
         <div>${f.note}</div>
       </div>`).join('');
+    const photoCount = (l.photoIds||[]).length;
     return `<div class="card">
       <div class="card-header" style="cursor:default">
         <div class="card-icon">📋</div>
@@ -1541,6 +2028,7 @@ function renderLogs() {
           ${l.memo ? `<div style="font-size:13px;margin-top:4px;color:var(--ink2)">${l.memo}</div>` : ''}
         </div>
       </div>
+      ${photoCount ? `<div class="photo-grid" id="log-card-photos-${l.id}" style="padding:0 16px 12px;margin-bottom:0"></div>` : ''}
       ${(l.look||l.crumb||l.taste) ? `<div style="padding:0 16px 12px;display:flex;flex-direction:column;gap:4px">
         ${l.look?`<div style="font-size:12px"><span style="color:var(--ink3);font-family:'DM Mono',monospace">외관 </span>${l.look}</div>`:''}
         ${l.crumb?`<div style="font-size:12px"><span style="color:var(--ink3);font-family:'DM Mono',monospace">속결 </span>${l.crumb}</div>`:''}
@@ -1553,6 +2041,30 @@ function renderLogs() {
       </div>
     </div>`;
   }).join('');
+  // Async load photo thumbnails for cards
+  state.logs.forEach(l => {
+    if ((l.photoIds||[]).length) hydrateLogCardPhotos(l.id);
+  });
+}
+
+async function hydrateLogCardPhotos(logId) {
+  const wrap = document.getElementById('log-card-photos-' + logId);
+  if (!wrap) return;
+  try {
+    const photos = await photoDBGetByLog(logId);
+    if (!photos.length) { wrap.style.display = 'none'; return; }
+    wrap.innerHTML = photos.map((p, i) => {
+      const cached = getCachedUrls(p.id);
+      let thumbUrl = cached?.thumb;
+      if (!thumbUrl && p.thumbBlob) {
+        thumbUrl = blobToUrl(p.thumbBlob);
+        cacheUrls(p.id, cached?.full, thumbUrl);
+      }
+      return `<div class="photo-thumb" onclick="openLightboxForLog('${logId}',${i})">
+        ${thumbUrl ? `<img src="${thumbUrl}" alt=""/>` : ''}
+      </div>`;
+    }).join('');
+  } catch (err) { console.error(err); }
 }
 
 // ===== NOTES =====
@@ -2099,12 +2611,45 @@ function render() {
 }
 
 // ===== JSON BACKUP =====
-function exportJSON() {
-  const data = JSON.stringify(state, null, 2);
+async function exportJSON() {
+  let includePhotos = false;
+  try {
+    const all = await photoDBGetAll();
+    if (all.length > 0) {
+      includePhotos = confirm(
+        `사진을 포함해서 백업할까?\n\n` +
+        `· 확인: 사진까지 모두 포함 (${all.length}장, 파일 큼)\n` +
+        `· 취소: 메타데이터만 (가벼움, 사진 제외)`
+      );
+    }
+  } catch (e) { console.error(e); }
+
+  const exportData = JSON.parse(JSON.stringify(state)); // deep clone
+
+  if (includePhotos) {
+    try {
+      const all = await photoDBGetAll();
+      // Convert each blob to base64 data URL
+      const photos = await Promise.all(all.map(async p => ({
+        id: p.id,
+        logId: p.logId,
+        order: p.order,
+        createdAt: p.createdAt,
+        blobData: await blobToDataURL(p.blob),
+        thumbData: await blobToDataURL(p.thumbBlob)
+      })));
+      exportData._photos = photos;
+    } catch (e) {
+      console.error(e);
+      toast('사진 포함 실패, 메타데이터만 저장돼');
+    }
+  }
+
+  const data = JSON.stringify(exportData, null, 2);
   const blob = new Blob([data], {type: 'application/json'});
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = '빵기록_' + today() + '.json';
+  a.download = '빵기록_' + today() + (includePhotos ? '_사진포함' : '') + '.json';
   a.click();
   toast('JSON으로 저장됐어!');
 }
@@ -2112,16 +2657,42 @@ function importJSON(e) {
   const file = e.target.files[0];
   if (!file) return;
   const reader = new FileReader();
-  reader.onload = ev => {
+  reader.onload = async ev => {
     try {
       const imported = JSON.parse(ev.target.result);
       if (!imported.recipes) { toast('올바른 파일이 아니야'); return; }
-      if (!confirm('현재 데이터를 덮어쓸까요?')) return;
-      Object.assign(state, imported);
+      const hasPhotos = Array.isArray(imported._photos) && imported._photos.length > 0;
+      const msg = hasPhotos
+        ? `현재 데이터를 덮어쓸까요?\n사진 ${imported._photos.length}장도 함께 복원돼.`
+        : '현재 데이터를 덮어쓸까요?';
+      if (!confirm(msg)) return;
+
+      // Restore photos first if present
+      if (hasPhotos) {
+        try {
+          await photoDBClear();
+          for (const p of imported._photos) {
+            const blob = await dataURLToBlob(p.blobData);
+            const thumbBlob = await dataURLToBlob(p.thumbData);
+            await photoDBPut({
+              id: p.id, logId: p.logId, order: p.order,
+              createdAt: p.createdAt, blob, thumbBlob
+            });
+          }
+        } catch (err) {
+          console.error('photo import error', err);
+          toast('사진 복원 실패');
+        }
+      }
+
+      const cleaned = { ...imported };
+      delete cleaned._photos;
+      Object.assign(state, cleaned);
       save();
+      revokeAllPhotoUrls();
       render();
       toast('불러왔어!');
-    } catch(err) { toast('파일 읽기 실패'); }
+    } catch(err) { console.error(err); toast('파일 읽기 실패'); }
   };
   reader.readAsText(file);
   e.target.value = '';
