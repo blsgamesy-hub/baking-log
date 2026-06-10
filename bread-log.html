@@ -720,6 +720,11 @@ window.dispatchEvent(new Event('firebase-ready'));
       <div id="ferment-steps"></div>
       <button class="btn-small" onclick="addFermentStep()">+ 발효 단계 추가</button>
 
+      <div class="section-label">성형</div>
+      <div style="font-size:11px;color:var(--ink3);font-family:'DM Mono',monospace;margin-bottom:6px">펀칭 · 둥글리기 · 벤치타임 · 최종성형 등</div>
+      <div id="shape-steps"></div>
+      <button class="btn-small" onclick="addShapeStep()">+ 성형 단계 추가</button>
+
       <div class="section-label">굽기</div>
       <div class="row">
         <div class="form-group">
@@ -818,6 +823,19 @@ window.dispatchEvent(new Event('firebase-ready'));
         <label class="form-label">맛 & 총평</label>
         <textarea class="form-textarea" id="l-taste" style="min-height:60px" placeholder="신맛 적절, 다음엔 발효 좀 더..."></textarea>
       </div>
+
+      <div class="section-label">손실율</div>
+      <div class="row">
+        <div class="form-group">
+          <label class="form-label">반죽 무게 (g)</label>
+          <input class="form-input" id="l-dough-weight" type="number" placeholder="900" oninput="updateLossRate()" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">완성 무게 (g)</label>
+          <input class="form-input" id="l-baked-weight" type="number" placeholder="810" oninput="updateLossRate()" />
+        </div>
+      </div>
+      <div id="loss-rate-display" style="font-family:'DM Mono',monospace;font-size:13px;color:var(--ink3);padding:2px 0 4px">손실율 —</div>
 
       <div class="section-label">사진</div>
       <div id="log-photo-grid" class="photo-grid"></div>
@@ -1405,6 +1423,7 @@ function openRecipeForm(parentId) {
   renderTagChips();
   document.getElementById('ing-rows').innerHTML = '';
   document.getElementById('ferment-steps').innerHTML = '';
+  document.getElementById('shape-steps').innerHTML = '';
   document.getElementById('bakers-pct-preview').innerHTML = '';
 
   if (parentId) {
@@ -1429,6 +1448,7 @@ function openRecipeForm(parentId) {
       renderTagChips();
       (parent.ingredients||[]).forEach(i => addIngRow(i.type, i));
       (parent.fermentSteps||[]).forEach(s => addFermentStep(s));
+      (parent.shapeSteps||[]).forEach(s => addShapeStep(s));
     }
   } else {
     document.getElementById('r-parent').value = '';
@@ -1458,15 +1478,15 @@ function editRecipe(id) {
   document.getElementById('r-storage').value = r.storage || '';
   document.getElementById('r-source').value = r.source || '';
   document.getElementById('r-link').value = r.link || '';
-  document.getElementById('r-source').value = r.source || '';
-  document.getElementById('r-link').value = r.link || '';
   document.getElementById('r-memo').value = r.memo || '';
   _activeTags = [...(r.tags||[])];
   renderTagChips();
   document.getElementById('ing-rows').innerHTML = '';
   document.getElementById('ferment-steps').innerHTML = '';
+  document.getElementById('shape-steps').innerHTML = '';
   (r.ingredients||[]).forEach(i => addIngRow(i.type, i));
   (r.fermentSteps||[]).forEach(s => addFermentStep(s));
+  (r.shapeSteps||[]).forEach(s => addShapeStep(s));
   if (r.parentId) {
     const parent = state.recipes.find(x => x.id === r.parentId);
     document.getElementById('r-parent').value = r.parentId;
@@ -1677,6 +1697,62 @@ function addFermentStep(data) {
   wrap.appendChild(div);
 }
 
+function addShapeStep(data) {
+  const id = uid();
+  const wrap = document.getElementById('shape-steps');
+  const div = document.createElement('div');
+  div.className = 'ferment-step';
+  div.id = 'sh-' + id;
+  div.innerHTML = `
+    <button class="step-del" onclick="document.getElementById('sh-${id}').remove()">×</button>
+    <div class="row">
+      <div class="form-group" style="margin-bottom:0">
+        <label class="form-label">단계명</label>
+        <input class="form-input" placeholder="펀칭 / 둥글리기 / 최종성형..." value="${data?.name||''}"/>
+      </div>
+      <div class="form-group" style="margin-bottom:0">
+        <label class="form-label">시간</label>
+        <input class="form-input" placeholder="벤치 20분..." value="${data?.time||''}"/>
+      </div>
+    </div>
+    <div class="form-group" style="margin-bottom:0;margin-top:8px">
+      <label class="form-label">메모</label>
+      <input class="form-input" placeholder="가스 빼고 3겹 접기, 표면 팽팽하게..." value="${data?.memo||''}"/>
+    </div>
+  `;
+  wrap.appendChild(div);
+}
+
+function getShapeSteps() {
+  return Array.from(document.querySelectorAll('#shape-steps .ferment-step')).map(el => {
+    const inputs = el.querySelectorAll('input');
+    return { name: inputs[0].value, time: inputs[1].value, memo: inputs[2].value };
+  });
+}
+
+function lossRateText(l) {
+  const dough = parseFloat(l.doughWeight), baked = parseFloat(l.bakedWeight);
+  if (dough > 0 && baked > 0 && baked <= dough) {
+    const rate = ((dough - baked) / dough * 100);
+    return `${rate.toFixed(1)}% (${dough}g → ${baked}g, −${(dough - baked).toFixed(0)}g)`;
+  }
+  return '';
+}
+
+function updateLossRate() {
+  const dough = parseFloat(document.getElementById('l-dough-weight').value);
+  const baked = parseFloat(document.getElementById('l-baked-weight').value);
+  const el = document.getElementById('loss-rate-display');
+  if (dough > 0 && baked > 0 && baked <= dough) {
+    const rate = ((dough - baked) / dough * 100);
+    el.textContent = `손실율 ${rate.toFixed(1)}% (−${(dough - baked).toFixed(0)}g)`;
+    el.style.color = 'var(--accent)';
+  } else {
+    el.textContent = '손실율 —';
+    el.style.color = 'var(--ink3)';
+  }
+}
+
 function addBakeStep(data) {
   const id = uid();
   const wrap = document.getElementById('bake-steps');
@@ -1743,6 +1819,7 @@ function saveRecipe() {
     ingredients: getIngredients(),
     mixing: document.getElementById('r-mixing').value,
     fermentSteps: getFermentSteps(),
+    shapeSteps: getShapeSteps(),
     preheat: document.getElementById('r-preheat').value,
     preheatTime: document.getElementById('r-preheat-time').value,
     bakeSteps: getBakeSteps(),
@@ -1807,6 +1884,14 @@ function openRecipeDetail(id) {
     html += `<div class="detail-section"><h3>발효</h3>`;
     r.fermentSteps.forEach(s => {
       html += `<div class="detail-row"><span>${s.name}</span><span>${s.temp?s.temp+'°C ':''} ${s.time||''}</span></div>`;
+      if(s.memo) html += `<p style="font-size:12px;color:var(--ink3);padding:4px 0">${s.memo}</p>`;
+    });
+    html += `</div>`;
+  }
+  if (r.shapeSteps && r.shapeSteps.length) {
+    html += `<div class="detail-section"><h3>성형</h3>`;
+    r.shapeSteps.forEach(s => {
+      html += `<div class="detail-row"><span>${s.name||'성형'}</span><span>${s.time||''}</span></div>`;
       if(s.memo) html += `<p style="font-size:12px;color:var(--ink3);padding:4px 0">${s.memo}</p>`;
     });
     html += `</div>`;
@@ -1892,6 +1977,9 @@ function openLogForm(recipeId) {
   document.getElementById('l-look').value = '';
   document.getElementById('l-crumb').value = '';
   document.getElementById('l-taste').value = '';
+  document.getElementById('l-dough-weight').value = '';
+  document.getElementById('l-baked-weight').value = '';
+  updateLossRate();
   document.getElementById('freshness-rows').innerHTML = '';
   const sel = document.getElementById('l-recipe');
   sel.innerHTML = '<option value="">선택 안 함</option>' + state.recipes.map(r=>`<option value="${r.id}">${r.name}</option>`).join('');
@@ -1951,6 +2039,8 @@ async function saveLog() {
     look: document.getElementById('l-look').value,
     crumb: document.getElementById('l-crumb').value,
     taste: document.getElementById('l-taste').value,
+    doughWeight: document.getElementById('l-dough-weight').value,
+    bakedWeight: document.getElementById('l-baked-weight').value,
     freshness: getFreshness(),
     photoIds: resolvedPhotoIds
   };
@@ -1982,6 +2072,9 @@ async function editLog(id) {
   document.getElementById('l-look').value = l.look || '';
   document.getElementById('l-crumb').value = l.crumb || '';
   document.getElementById('l-taste').value = l.taste || '';
+  document.getElementById('l-dough-weight').value = l.doughWeight || '';
+  document.getElementById('l-baked-weight').value = l.bakedWeight || '';
+  updateLossRate();
   document.getElementById('freshness-rows').innerHTML = '';
   (l.freshness||[]).forEach(f => addFreshnessRow(f));
   const sel = document.getElementById('l-recipe');
@@ -2034,6 +2127,7 @@ function renderLogs() {
         ${l.crumb?`<div style="font-size:12px"><span style="color:var(--ink3);font-family:'DM Mono',monospace">속결 </span>${l.crumb}</div>`:''}
         ${l.taste?`<div style="font-size:12px"><span style="color:var(--ink3);font-family:'DM Mono',monospace">맛   </span>${l.taste}</div>`:''}
       </div>` : ''}
+      ${lossRateText(l) ? `<div style="padding:0 16px 12px"><div style="font-size:12px"><span style="color:var(--ink3);font-family:'DM Mono',monospace">손실율 </span>${lossRateText(l)}</div></div>` : ''}
       ${freshnessHtml ? `<div style="padding:0 16px 12px"><div style="font-size:10px;font-family:'DM Mono',monospace;color:var(--ink3);margin-bottom:6px">FRESHNESS</div>${freshnessHtml}</div>` : ''}
       <div class="action-btns">
         <button class="action-btn primary" onclick="editLog('${l.id}')">✎ 수정</button>
