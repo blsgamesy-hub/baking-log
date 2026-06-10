@@ -393,6 +393,9 @@
     background: #EDE3D0; border-radius: 8px; padding: 12px;
     margin-bottom: 8px; position: relative;
   }
+  .ferment-step.dragging { opacity: 0.5; }
+  .ferment-step.drop-target-above { border-top: 2px solid var(--accent); margin-top: 6px; }
+  .ferment-step.drop-target-below { border-bottom: 2px solid var(--accent); margin-bottom: 10px; }
   .ferment-step .step-del {
     position: absolute; top: 8px; right: 8px;
     background: none; border: none; color: var(--ink3); cursor: pointer; font-size: 16px;
@@ -716,14 +719,13 @@ window.dispatchEvent(new Event('firebase-ready'));
         <textarea class="form-textarea" id="r-mixing" placeholder="오토리즈 30분, 슬랩앤폴드 4회..."></textarea>
       </div>
 
-      <div class="section-label">발효</div>
-      <div id="ferment-steps"></div>
-      <button class="btn-small" onclick="addFermentStep()">+ 발효 단계 추가</button>
-
-      <div class="section-label">성형</div>
-      <div style="font-size:11px;color:var(--ink3);font-family:'DM Mono',monospace;margin-bottom:6px">펀칭 · 둥글리기 · 벤치타임 · 최종성형 등</div>
-      <div id="shape-steps"></div>
-      <button class="btn-small" onclick="addShapeStep()">+ 성형 단계 추가</button>
+      <div class="section-label">공정</div>
+      <div style="font-size:11px;color:var(--ink3);font-family:'DM Mono',monospace;margin-bottom:8px">1차 발효 → 성형 → 2차 발효 등 실제 순서대로 추가해</div>
+      <div id="process-steps"></div>
+      <div style="display:flex;gap:8px;margin-top:4px">
+        <button class="btn-small" onclick="addProcessStep('ferment')">+ 발효 단계</button>
+        <button class="btn-small" onclick="addProcessStep('shape')">+ 성형 단계</button>
+      </div>
 
       <div class="section-label">굽기</div>
       <div class="row">
@@ -1422,8 +1424,7 @@ function openRecipeForm(parentId) {
   _activeTags = [];
   renderTagChips();
   document.getElementById('ing-rows').innerHTML = '';
-  document.getElementById('ferment-steps').innerHTML = '';
-  document.getElementById('shape-steps').innerHTML = '';
+  document.getElementById('process-steps').innerHTML = '';
   document.getElementById('bakers-pct-preview').innerHTML = '';
 
   if (parentId) {
@@ -1442,13 +1443,14 @@ function openRecipeForm(parentId) {
       document.getElementById('r-source').value = parent.source || '';
       document.getElementById('r-link').value = parent.link || '';
       document.getElementById('r-storage').value = parent.storage || '';
-      document.getElementById('r-source').value = parent.source || '';
-      document.getElementById('r-link').value = parent.link || '';
       _activeTags = [...(parent.tags||[])];
       renderTagChips();
       (parent.ingredients||[]).forEach(i => addIngRow(i.type, i));
-      (parent.fermentSteps||[]).forEach(s => addFermentStep(s));
-      (parent.shapeSteps||[]).forEach(s => addShapeStep(s));
+      const parentSteps = parent.processSteps || [
+        ...(parent.fermentSteps||[]).map(s => ({...s, kind:'ferment'})),
+        ...(parent.shapeSteps||[]).map(s => ({...s, kind:'shape'}))
+      ];
+      parentSteps.forEach(s => addProcessStep(s.kind || 'ferment', s));
     }
   } else {
     document.getElementById('r-parent').value = '';
@@ -1482,11 +1484,13 @@ function editRecipe(id) {
   _activeTags = [...(r.tags||[])];
   renderTagChips();
   document.getElementById('ing-rows').innerHTML = '';
-  document.getElementById('ferment-steps').innerHTML = '';
-  document.getElementById('shape-steps').innerHTML = '';
+  document.getElementById('process-steps').innerHTML = '';
   (r.ingredients||[]).forEach(i => addIngRow(i.type, i));
-  (r.fermentSteps||[]).forEach(s => addFermentStep(s));
-  (r.shapeSteps||[]).forEach(s => addShapeStep(s));
+  const editSteps = r.processSteps || [
+    ...(r.fermentSteps||[]).map(s => ({...s, kind:'ferment'})),
+    ...(r.shapeSteps||[]).map(s => ({...s, kind:'shape'}))
+  ];
+  editSteps.forEach(s => addProcessStep(s.kind || 'ferment', s));
   if (r.parentId) {
     const parent = state.recipes.find(x => x.id === r.parentId);
     document.getElementById('r-parent').value = r.parentId;
@@ -1730,6 +1734,130 @@ function getShapeSteps() {
   });
 }
 
+// ===== 공정 통합 타임라인 (발효 + 성형 자유 순서) =====
+function addProcessStep(kind, data) {
+  const id = uid();
+  const wrap = document.getElementById('process-steps');
+  const div = document.createElement('div');
+  div.className = 'ferment-step';
+  div.id = 'ps-' + id;
+  div.dataset.kind = kind;
+  div.style.cssText = 'display:flex;gap:8px;padding:10px 10px 12px;';
+  const isFerment = kind === 'ferment';
+  div.innerHTML = `
+    <div class="ing-drag-handle" data-drag-handle style="height:auto;padding-top:4px">⋮⋮</div>
+    <div style="flex:1;min-width:0">
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px">
+        <span style="font-size:11px;font-family:'DM Mono',monospace;color:${isFerment?'#4A6B2A':'#5C4A38'};background:${isFerment?'#E4F0E0':'#EDE3D0'};padding:2px 8px;border-radius:10px">${isFerment?'🌡️ 발효':'✋ 성형'}</span>
+        <button onclick="document.getElementById('ps-${id}').remove()" style="margin-left:auto;background:none;border:none;color:var(--ink3);cursor:pointer;font-size:18px;padding:0;line-height:1">×</button>
+      </div>
+      <div class="form-group" style="margin-bottom:8px">
+        <label class="form-label">단계명</label>
+        <input class="form-input" placeholder="${isFerment?'1차 발효 / 냉장 벌크 / 2차 발효...':'펀칭 / 벤치타임 / 최종성형...'}" value="${data?.name||''}"/>
+      </div>
+      <div class="row">
+        ${isFerment ? `<div class="form-group"><label class="form-label">온도 (°C)</label><input class="form-input" type="number" placeholder="26" value="${data?.temp||''}"/></div>` : ''}
+        <div class="form-group"><label class="form-label">시간</label><input class="form-input" placeholder="${isFerment?'4h / 12h...':'벤치 20분...'}" value="${data?.time||''}"/></div>
+      </div>
+      <div class="form-group" style="margin-bottom:0">
+        <label class="form-label">메모</label>
+        <input class="form-input" placeholder="${isFerment?'50%까지 부풀면 완료...':'가스 빼고 3겹 접기, 표면 팽팽하게...'}" value="${data?.memo||''}"/>
+      </div>
+    </div>
+  `;
+  wrap.appendChild(div);
+  attachStepDrag(div);
+}
+
+function attachStepDrag(row) {
+  const handle = row.querySelector('[data-drag-handle]');
+  if (!handle) return;
+  let pointerId = null, startY = 0, dragging = false, lastTarget = null;
+
+  function clearTargets() {
+    document.querySelectorAll('#process-steps .ferment-step').forEach(r => {
+      r.classList.remove('drop-target-above', 'drop-target-below');
+    });
+  }
+
+  handle.addEventListener('pointerdown', e => {
+    e.preventDefault();
+    pointerId = e.pointerId; startY = e.clientY; dragging = false;
+    handle.setPointerCapture(pointerId);
+  });
+
+  handle.addEventListener('pointermove', e => {
+    if (pointerId !== e.pointerId) return;
+    if (!dragging && Math.abs(e.clientY - startY) > 4) { dragging = true; row.classList.add('dragging'); }
+    if (!dragging) return;
+    const rows = Array.from(document.querySelectorAll('#process-steps .ferment-step'));
+    let target = null, position = 'below';
+    for (const r of rows) {
+      if (r === row) continue;
+      const rect = r.getBoundingClientRect();
+      if (e.clientY >= rect.top && e.clientY <= rect.bottom) {
+        target = r; position = e.clientY < rect.top + rect.height / 2 ? 'above' : 'below'; break;
+      }
+    }
+    if (!target && rows.length) {
+      const others = rows.filter(r => r !== row);
+      const first = others[0], last = others[others.length - 1];
+      if (first && e.clientY < first.getBoundingClientRect().top) { target = first; position = 'above'; }
+      else if (last && e.clientY > last.getBoundingClientRect().bottom) { target = last; position = 'below'; }
+    }
+    clearTargets();
+    if (target) { target.classList.add(position === 'above' ? 'drop-target-above' : 'drop-target-below'); lastTarget = { row: target, position }; }
+    else { lastTarget = null; }
+  });
+
+  function endDrag(e) {
+    if (pointerId !== e.pointerId) return;
+    try { handle.releasePointerCapture(pointerId); } catch(_) {}
+    pointerId = null;
+    if (!dragging) { clearTargets(); return; }
+    dragging = false; row.classList.remove('dragging');
+    if (lastTarget?.row && lastTarget.row !== row) {
+      const wrap = document.getElementById('process-steps');
+      if (lastTarget.position === 'above') wrap.insertBefore(row, lastTarget.row);
+      else wrap.insertBefore(row, lastTarget.row.nextSibling);
+    }
+    clearTargets(); lastTarget = null;
+  }
+
+  handle.addEventListener('pointerup', endDrag);
+  handle.addEventListener('pointercancel', endDrag);
+}
+
+function getProcessSteps() {
+  return Array.from(document.querySelectorAll('#process-steps .ferment-step')).map(el => {
+    const kind = el.dataset.kind;
+    const inputs = el.querySelectorAll('input');
+    if (kind === 'ferment') {
+      return { kind, name: inputs[0].value, temp: inputs[1].value, time: inputs[2].value, memo: inputs[3].value };
+    } else {
+      return { kind, name: inputs[0].value, time: inputs[1].value, memo: inputs[2].value };
+    }
+  });
+}
+
+function migrateRecipes() {
+  let didMigrate = false;
+  state.recipes = state.recipes.map(r => {
+    if (!r.processSteps && ((r.fermentSteps && r.fermentSteps.length) || (r.shapeSteps && r.shapeSteps.length))) {
+      didMigrate = true;
+      return { ...r, processSteps: [
+        ...(r.fermentSteps||[]).map(s => ({...s, kind:'ferment'})),
+        ...(r.shapeSteps||[]).map(s => ({...s, kind:'shape'}))
+      ]};
+    }
+    return r;
+  });
+  if (didMigrate) {
+    save();
+    state.recipes.filter(r => r.processSteps).forEach(r => fsSet('recipes', r));
+  }
+}
+
 function lossRateText(l) {
   const dough = parseFloat(l.doughWeight), baked = parseFloat(l.bakedWeight);
   if (dough > 0 && baked > 0 && baked <= dough) {
@@ -1818,15 +1946,12 @@ function saveRecipe() {
     parentId: document.getElementById('r-parent').value || null,
     ingredients: getIngredients(),
     mixing: document.getElementById('r-mixing').value,
-    fermentSteps: getFermentSteps(),
-    shapeSteps: getShapeSteps(),
+    processSteps: getProcessSteps(),
     preheat: document.getElementById('r-preheat').value,
     preheatTime: document.getElementById('r-preheat-time').value,
     bakeSteps: getBakeSteps(),
     bakeNote: document.getElementById('r-bake-note').value,
     storage: document.getElementById('r-storage').value,
-    source: document.getElementById('r-source').value,
-    link: document.getElementById('r-link').value,
     source: document.getElementById('r-source').value,
     link: document.getElementById('r-link').value,
     memo: document.getElementById('r-memo').value,
@@ -1880,19 +2005,18 @@ function openRecipeDetail(id) {
 
   html += `<div class="detail-section"><h3>재료 & 베이커스%</h3>${ingHtml||'—'}</div>`;
   if (r.mixing) html += `<div class="detail-section"><h3>반죽</h3><p class="detail-memo">${r.mixing}</p></div>`;
-  if (r.fermentSteps && r.fermentSteps.length) {
-    html += `<div class="detail-section"><h3>발효</h3>`;
-    r.fermentSteps.forEach(s => {
-      html += `<div class="detail-row"><span>${s.name}</span><span>${s.temp?s.temp+'°C ':''} ${s.time||''}</span></div>`;
-      if(s.memo) html += `<p style="font-size:12px;color:var(--ink3);padding:4px 0">${s.memo}</p>`;
-    });
-    html += `</div>`;
-  }
-  if (r.shapeSteps && r.shapeSteps.length) {
-    html += `<div class="detail-section"><h3>성형</h3>`;
-    r.shapeSteps.forEach(s => {
-      html += `<div class="detail-row"><span>${s.name||'성형'}</span><span>${s.time||''}</span></div>`;
-      if(s.memo) html += `<p style="font-size:12px;color:var(--ink3);padding:4px 0">${s.memo}</p>`;
+  const processSteps = r.processSteps || [
+    ...(r.fermentSteps||[]).map(s => ({...s, kind:'ferment'})),
+    ...(r.shapeSteps||[]).map(s => ({...s, kind:'shape'}))
+  ];
+  if (processSteps.length) {
+    html += `<div class="detail-section"><h3>공정</h3>`;
+    processSteps.forEach(s => {
+      const isFerment = s.kind === 'ferment';
+      const kindBadge = `<span style="font-size:10px;font-family:'DM Mono',monospace;color:${isFerment?'#4A6B2A':'#5C4A38'};background:${isFerment?'#E4F0E0':'#EDE3D0'};padding:1px 7px;border-radius:8px;margin-right:6px">${isFerment?'🌡️발효':'✋성형'}</span>`;
+      const timeTemp = [s.temp?s.temp+'°C':'', s.time||''].filter(Boolean).join(' · ');
+      html += `<div class="detail-row" style="align-items:center"><span style="display:flex;align-items:center">${kindBadge}${s.name||''}</span><span>${timeTemp}</span></div>`;
+      if(s.memo) html += `<p style="font-size:12px;color:var(--ink3);padding:3px 0 3px 8px">${s.memo}</p>`;
     });
     html += `</div>`;
   }
@@ -2925,6 +3049,7 @@ async function fsSaveSettings() {
 
 // ===== INIT =====
 load();
+migrateRecipes();
 render();
 
 function initFirebase() {
