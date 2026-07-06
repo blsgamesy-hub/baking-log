@@ -545,7 +545,7 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js';
 import {
   getAuth, GoogleAuthProvider,
-  signInWithPopup, signInWithRedirect, getRedirectResult,
+  signInWithPopup,
   signOut, onAuthStateChanged
 } from 'https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js';
 import {
@@ -578,7 +578,7 @@ try {
 
 window.__fb = {
   auth, db,
-  GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult,
+  GoogleAuthProvider, signInWithPopup,
   signOut, onAuthStateChanged,
   collection, doc, query, orderBy,
   setDoc, addDoc, updateDoc, deleteDoc, getDocs,
@@ -1401,10 +1401,13 @@ function openSheet(id) { document.getElementById(id).classList.add('open'); }
 function closeSheet(id) { document.getElementById(id).classList.remove('open'); }
 
 // ===== TOAST =====
-function toast(msg) {
+function toast(msg, duration, onTap) {
   const t = document.getElementById('toast');
   t.textContent = msg; t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2000);
+  t.style.cursor = onTap ? 'pointer' : '';
+  t.onclick = onTap ? () => { t.classList.remove('show'); onTap(); } : null;
+  clearTimeout(t._hideTimer);
+  t._hideTimer = setTimeout(() => t.classList.remove('show'), duration || 2000);
 }
 
 // ===== RECIPES =====
@@ -2841,7 +2844,12 @@ async function exportJSON() {
       );
     }
   } catch (e) { console.error(e); }
+  await doExportJSON(includePhotos);
+  if (includePhotos) localStorage.setItem('lastPhotoBackupAt', String(Date.now()));
+  toast('JSON으로 저장됐어!');
+}
 
+async function doExportJSON(includePhotos) {
   const exportData = JSON.parse(JSON.stringify(state)); // deep clone
 
   if (includePhotos) {
@@ -2869,7 +2877,25 @@ async function exportJSON() {
   a.href = URL.createObjectURL(blob);
   a.download = '빵기록_' + today() + (includePhotos ? '_사진포함' : '') + '.json';
   a.click();
-  toast('JSON으로 저장됐어!');
+}
+
+// 사진은 클라우드 동기화가 안 되니, 일정 주기로 조용히 자동 백업(다운로드)한다.
+const PHOTO_BACKUP_INTERVAL_MS = 7 * 24 * 60 * 60 * 1000; // 7일
+async function autoBackupPhotosIfNeeded() {
+  try {
+    const all = await photoDBGetAll();
+    if (!all.length) return; // 사진 없으면 백업할 것도 없음
+
+    const lastBackup = Number(localStorage.getItem('lastPhotoBackupAt') || 0);
+    const newestPhotoAt = Math.max(...all.map(p => p.createdAt || 0));
+
+    // 마지막 백업 이후 새 사진이 생겼고, 7일 이상 지났을 때만 자동 실행
+    if (newestPhotoAt > lastBackup && Date.now() - lastBackup > PHOTO_BACKUP_INTERVAL_MS) {
+      await doExportJSON(true);
+      localStorage.setItem('lastPhotoBackupAt', String(Date.now()));
+      toast('📸 사진 자동 백업 완료 (다운로드 폴더 확인)', 4000);
+    }
+  } catch (e) { console.error('autoBackupPhotosIfNeeded', e); }
 }
 function importJSON(e) {
   const file = e.target.files[0];
@@ -2926,24 +2952,16 @@ function syncDot(color) {
   if (d) d.style.background = color;
 }
 
-function isStandalonePWA() {
-  return window.matchMedia('(display-mode: standalone)').matches
-      || window.navigator.standalone === true;
-}
-
 function doSignIn() {
   const fb = window.__fb;
   const provider = new fb.GoogleAuthProvider();
-  if (isStandalonePWA()) {
-    fb.signInWithRedirect(fb.auth, provider).catch(e => {
-      if (e.code === 'auth/unauthorized-domain') alert('이 기기에서는 로그인할 수 없어요');
-    });
-  } else {
-    fb.signInWithPopup(fb.auth, provider).catch(e => {
-      if (e.code === 'auth/unauthorized-domain') alert('이 기기에서는 로그인할 수 없어요');
-      else if (e.code !== 'auth/popup-closed-by-user') console.error(e);
-    });
-  }
+  fb.signInWithPopup(fb.auth, provider).catch(e => {
+    if (e.code === 'auth/unauthorized-domain') alert('이 기기에서는 로그인할 수 없어요');
+    else if (e.code !== 'auth/popup-closed-by-user' && e.code !== 'auth/cancelled-popup-request') {
+      console.error(e);
+      alert('로그인에 실패했어. 잠시 후 다시 시도해줘.');
+    }
+  });
 }
 
 function doSignOut() {
@@ -3014,22 +3032,30 @@ function stopFirestoreSync() {
   _unsubs = [];
 }
 
+var _lastCloudWarnAt = 0;
+function warnCloudSaveFailed() {
+  const now = Date.now();
+  if (now - _lastCloudWarnAt < 15000) return; // 15초 내 중복 알림 방지
+  _lastCloudWarnAt = now;
+  toast('⚠️ 클라우드에 저장 안 됐어. 눌러서 로그인', 4000, doSignIn);
+}
+
 async function fsSet(col, item) {
-  if (!isLoggedIn) return;
+  if (!isLoggedIn) { warnCloudSaveFailed(); return; }
   const fb = window.__fb;
   const ref = fb.doc(fb.db, 'users/' + currentUid + '/' + col + '/' + item.id);
   const toSave = { ...item };
   delete toSave.id;
   if (!toSave.createdAt) toSave.createdAt = Date.now();
   try { await fb.setDoc(ref, toSave); }
-  catch(e) { console.error('fsSet', e); syncDot('#f44336'); }
+  catch(e) { console.error('fsSet', e); syncDot('#f44336'); warnCloudSaveFailed(); }
 }
 
 async function fsDel(col, id) {
-  if (!isLoggedIn) return;
+  if (!isLoggedIn) { warnCloudSaveFailed(); return; }
   const fb = window.__fb;
   try { await fb.deleteDoc(fb.doc(fb.db, 'users/' + currentUid + '/' + col + '/' + id)); }
-  catch(e) { console.error('fsDel', e); }
+  catch(e) { console.error('fsDel', e); warnCloudSaveFailed(); }
 }
 
 async function fsSaveSettings() {
@@ -3051,12 +3077,10 @@ async function fsSaveSettings() {
 load();
 migrateRecipes();
 render();
+setTimeout(autoBackupPhotosIfNeeded, 3000);
 
 function initFirebase() {
   const fb = window.__fb;
-  fb.getRedirectResult(fb.auth).catch(e => {
-    if (e.code === 'auth/unauthorized-domain') alert('이 기기에서는 로그인할 수 없어요');
-  });
   fb.onAuthStateChanged(fb.auth, user => {
     if (user) {
       isLoggedIn = true;
